@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Skateable-SF</string>
+    <string name="register">Register</string>
+    <string name="create_challenge">Create challenge</string>
+    <string name="create_identity">Create identity</string>
+    <string name="add_device">Add device</string>
+    <string name="remove_device">Remove device</string>
+    <string name="lookup">Lookup</string>
+    <string name="user_id">User ID</string>
+    <string name="captcha">Captcha</string>
+    <string name="challenge_key">Challenge key</string>
+    <string name="device_alias">Device alias</string>
+    <string name="captcha_file">Captcha file</string>
+    <string name="device_pem_file">Device PEM file</string>
+    <string name="pem_file">PEM file</string>
+</resources>
