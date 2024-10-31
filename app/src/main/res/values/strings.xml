@@ -13,4 +13,10 @@
     <string name="captcha_file">Captcha file</string>
     <string name="device_pem_file">Device PEM file</string>
     <string name="pem_file">PEM file</string>
+    <string name="make_pem">Make PEM File</string>
+    <string name="create_service">Create II Service</string>
+    <string name="login">Login</string>
+    <string name="captcha_text">Captcha</string>
+    <string name="captcha_answer">Captcha answer</string>
+    <string name="get_challenge">Get Challenge</string>
 </resources>

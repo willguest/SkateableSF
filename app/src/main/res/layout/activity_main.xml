@@ -13,19 +13,27 @@
         android:autofillHints="" />
 
     <EditText
-        android:id="@+id/devicePemFile"
-        android:inputType="textUri"
+        android:id="@+id/challengeKey"
+        android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/device_pem_file"
+        android:hint="@string/challenge_key"
         android:autofillHints="" />
 
+    <ImageView
+        android:id="@+id/captchaImage"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/captcha_text" />
+
     <EditText
-        android:id="@+id/captchaFile"
-        android:inputType="textUri"
+        android:id="@+id/captchaAnswer"
+        android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/captcha_file"
+        android:hint="@string/captcha_answer"
         android:autofillHints="" />
 
     <EditText
@@ -37,22 +45,6 @@
         android:autofillHints="" />
 
     <EditText
-        android:id="@+id/challengeKey"
-        android:inputType="text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/challenge_key"
-        android:autofillHints="" />
-
-    <EditText
-        android:id="@+id/captcha"
-        android:inputType="text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/captcha"
-        android:autofillHints="" />
-
-    <EditText
         android:id="@+id/userId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -61,16 +53,16 @@
         android:autofillHints="" />
 
     <Button
-        android:id="@+id/createIdentityButton"
+        android:id="@+id/makePEM"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/create_identity" />
+        android:text="@string/make_pem" />
 
     <Button
-        android:id="@+id/createChallengeButton"
+        android:id="@+id/getChallengeButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/create_challenge" />
+        android:text="@string/get_challenge" />
 
     <Button
         android:id="@+id/registerButton"

@@ -1,48 +1,102 @@
 package com.example.skateable_sf
 
 import android.app.Activity
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.widget.Button
-import org.ic4j.agent.Agent
-import org.ic4j.agent.AgentBuilder
-import org.ic4j.agent.http.ReplicaApacheHttpTransport
-import org.ic4j.agent.identity.BasicIdentity
-import java.util.Properties
+import android.widget.EditText
+import android.widget.ImageView
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.nio.file.Paths
+
 
 class MainActivity : Activity() {
-    private lateinit var internetIdentityService: InternetIdentityService
+    private lateinit var iis: InternetIdentityService
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize the InternetIdentityService instance here
-        //val agent = createAgent()
-        //val env = createEnv()
-        //internetIdentityService = InternetIdentityService(agent, env)
+        iis = InternetIdentityService()
+        val extPath: String = applicationContext.filesDir.path
+        val pemFileEditText = findViewById<EditText>(R.id.pemFile)
+        val challengeKeyEditText = findViewById<EditText>(R.id.challengeKey)
+        val captchaImageView = findViewById<ImageView>(R.id.captchaImage)
+        val captchaAnswerText = findViewById<EditText>(R.id.captchaAnswer)
+        val deviceAliasEditText = findViewById<EditText>(R.id.deviceAlias)
+        val userIdEditText = findViewById<EditText>(R.id.userId)
+        val makePEMButton = findViewById<Button>(R.id.makePEM)
+        val login = findViewById<Button>(R.id.getChallengeButton)
+        val registerButton = findViewById<Button>(R.id.registerButton)
+        val addDeviceButton = findViewById<Button>(R.id.addDeviceButton)
+        val removeDeviceButton = findViewById<Button>(R.id.removeDeviceButton)
+        val lookupButton = findViewById<Button>(R.id.lookupButton)
 
-        val createChallengeButton = findViewById<Button>(R.id.createChallengeButton)
-        createChallengeButton.setOnClickListener {
-            val challenge = internetIdentityService.createChallenge("captcha.png")
-            // Update the UI with the challenge information
+        makePEMButton.setOnClickListener {
+            pemFileEditText.setText(iis.createIdentity(extPath))
         }
 
-        // Other button click listeners and UI updates here
+        login.setOnClickListener {
+                val challenge = iis.createChallenge(extPath)
+                val captchaPath = Paths.get(extPath, "challenge.png").toString()
+
+                // Display key for registration
+                challengeKeyEditText.setText(challenge.challengeKey)
+
+                // Convert byte[] to a Bitmap
+                val captchaImageBytes = Base64.decode(challenge.pngBase64, Base64.DEFAULT)
+                val captchaImage = BitmapFactory.decodeByteArray(captchaImageBytes, 0, captchaImageBytes.size)
+
+                // Save the captcha image to a file
+                val outputFile = File(captchaPath)
+                val outputStream = FileOutputStream(outputFile)
+                captchaImage.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                outputStream.flush()
+                outputStream.close()
+
+                // Display captcha challenge
+                captchaImageView.setImageBitmap(captchaImage)
+        }
+
+        registerButton.setOnClickListener {
+            val challengeKey = challengeKeyEditText.text.toString()
+            val captchaAnswer = captchaAnswerText.text.toString()
+
+            GlobalScope.launch(Dispatchers.Main) {
+                iis.register(challengeKey, "a")
+            }
+        }
+
+        addDeviceButton.setOnClickListener {
+            val pemFile = pemFileEditText.text.toString()
+            val deviceAlias = deviceAliasEditText.text.toString()
+            val userId = userIdEditText.text.toString().toLong()
+            // ...
+        }
+
+        removeDeviceButton.setOnClickListener {
+            val pemFile = pemFileEditText.text.toString()
+            val userId = userIdEditText.text.toString().toLong()
+            // ...
+        }
+
+        lookupButton.setOnClickListener {
+            val pemFile = pemFileEditText.text.toString()
+            val userId = userIdEditText.text.toString().toLong()
+            // ...
+        }
+
+
     }
 
-    private fun createAgent(): Agent {
-        // Implement the logic to create the Agent instance here
-        // For example:
-        val identity = BasicIdentity.fromPEMFile(java.io.File("identity.pem").toPath())
-        val transport = ReplicaApacheHttpTransport.create("http://localhost:8000")
-        return AgentBuilder().transport(transport).identity(identity).build()
-    }
 
-    private fun createEnv(): Properties {
-        // Implement the logic to create the Properties instance here
-        // For example:
-        val env = Properties()
-        env.setProperty("ii.location", "http://localhost:8000")
-        return env
-    }
+
 }

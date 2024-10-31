@@ -54,6 +54,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.ic4j.agent)
     implementation(libs.ic4j.candid)
     implementation(libs.ic4j.internetidentity)
@@ -84,4 +85,5 @@ dependencies {
     androidTestImplementation(libs.junit.v412)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 }
