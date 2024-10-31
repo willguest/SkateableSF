@@ -80,8 +80,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    androidTestImplementation("org.testng:testng:6.9.6")
-    androidTestImplementation("junit:junit:4.12")
+    androidTestImplementation(libs.testng)
+    androidTestImplementation(libs.junit.v412)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

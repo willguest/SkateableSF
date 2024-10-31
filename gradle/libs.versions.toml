@@ -1,5 +1,6 @@
 [versions]
 agp = "8.3.1"
+junitJunit = "4.12"
 kotlin = "1.9.0"
 coreKtx = "1.12.0"
 junit = "4.13.2"
@@ -18,6 +19,7 @@ jackson-databind = "2.17.1"
 jackson-datatype-jdk8 = "2.17.1"
 jackson-dataformat-cbor = "2.17.1"
 bouncycastle = "1.78.1"
+testng = "6.9.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +40,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 ic4j-agent = { group = "org.ic4j", name = "ic4j-agent", version.ref = "ic4j" }
 ic4j-candid = { group = "org.ic4j", name = "ic4j-candid", version.ref = "ic4j" }
 ic4j-internetidentity = { group = "org.ic4j", name = "ic4j-internetidentity", version.ref = "ic4j" }
+junit-v412 = { module = "junit:junit", version.ref = "junitJunit" }
 slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
 commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "commons-codec" }
 commons-lang = { group = "org.apache.commons", name = "commons-lang3", version.ref = "commons-lang" }
@@ -47,6 +50,7 @@ jackson-datatype-jdk8 = { group = "com.fasterxml.jackson.datatype", name = "jack
 jackson-dataformat-cbor = { group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-cbor", version.ref = "jackson-dataformat-cbor" }
 bouncycastle-bcprov-jdk18on = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
 bouncycastle-bcpkix-jdk18on = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
+testng = { module = "org.testng:testng", version.ref = "testng" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
