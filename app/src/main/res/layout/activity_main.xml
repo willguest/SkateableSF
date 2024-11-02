@@ -4,13 +4,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/pemFile"
+    <Button
+        android:id="@+id/getChallengeButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textUri"
-        android:hint="@string/pem_file"
-        android:autofillHints="" />
+        android:text="@string/get_challenge" />
 
     <EditText
         android:id="@+id/challengeKey"
@@ -18,7 +16,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/challenge_key"
-        android:autofillHints="" />
+        android:autofillHints=""
+        android:clickable="false"
+        android:cursorVisible="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
 
     <ImageView
         android:id="@+id/captchaImage"
@@ -36,13 +38,11 @@
         android:hint="@string/captcha_answer"
         android:autofillHints="" />
 
-    <EditText
-        android:id="@+id/deviceAlias"
-        android:inputType="text"
+    <Button
+        android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/device_alias"
-        android:autofillHints="" />
+        android:text="@string/register" />
 
     <EditText
         android:id="@+id/userId"
@@ -51,24 +51,6 @@
         android:hint="@string/user_id"
         android:inputType="number"
         android:autofillHints="" />
-
-    <Button
-        android:id="@+id/makePEM"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/make_pem" />
-
-    <Button
-        android:id="@+id/getChallengeButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/get_challenge" />
-
-    <Button
-        android:id="@+id/registerButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/register" />
 
     <Button
         android:id="@+id/addDeviceButton"
@@ -87,5 +69,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/lookup" />
+
+    <EditText
+        android:id="@+id/deviceAlias"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/device_alias"
+        android:autofillHints="" />
+
+    <Button
+        android:id="@+id/testButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/test" />
 
 </LinearLayout>

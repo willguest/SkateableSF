@@ -19,4 +19,6 @@
     <string name="captcha_text">Captcha</string>
     <string name="captcha_answer">Captcha answer</string>
     <string name="get_challenge">Get Challenge</string>
+    <string name="test">Test</string>
+    <string name="make_identity">Make Identity</string>
 </resources>
