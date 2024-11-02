@@ -1,6 +1,8 @@
 package com.example.skateable_sf
 
+import android.provider.ContactsContract.Data
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter
@@ -27,6 +29,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.math.BigInteger
 import java.net.URISyntaxException
 import java.nio.file.Paths
 import java.security.KeyPair
@@ -50,7 +53,7 @@ class CanisterService(fileStoragePath: String) {
     private val deviceAlias = "Device1"
     private val userId: Long? = null
 
-    private lateinit var sessionKey: ByteArray
+    lateinit var sessionKey: ByteArray
 
     fun getDeviceAlias(): String {
         return this.deviceAlias
@@ -66,11 +69,18 @@ class CanisterService(fileStoragePath: String) {
             val identity: Identity = BasicIdentity.fromKeyPair(keyPair)
             this.devicePemFile = Paths.get(fileStoragePath, pemFile).toString()
 
-            val outputFile = File("$this.fileStoragePath/$pemFile")
+
+            LOG.info("writing to file: " + this.devicePemFile)
+
+            val outputFile = File(this.fileStoragePath + "/" + this.pemFile)
+
             val outputStream = FileOutputStream(outputFile)
             val pemWriter = JcaPEMWriter(outputStream.writer())
             pemWriter.writeObject(keyPair.private)
             pemWriter.close()
+
+            LOG.info("keys written to file: " + this.devicePemFile)
+
             return pemFile
         } catch (e: NoSuchAlgorithmException) {
             return e.localizedMessage!!.toString()
@@ -166,6 +176,18 @@ class CanisterService(fileStoragePath: String) {
         return agent
     }
 
+    private fun getIdentity() : BasicIdentity {
+        val pemPath = Paths.get(this.fileStoragePath, this.pemFile)
+
+        if (!pemPath.exists()){
+            LOG.info("no identity found, creating a new one...")
+            this.pemFile = createIdentity()
+        }
+
+        val identity : BasicIdentity = BasicIdentity.fromPEMFile(pemPath)
+        return identity
+    }
+
     private fun getProperties() : Properties{
         val propInputStream: InputStream? =
             javaClass.classLoader.getResourceAsStream(this.PROPERTIES_FILE_NAME)
@@ -178,17 +200,10 @@ class CanisterService(fileStoragePath: String) {
     @Throws(IOException::class, URISyntaxException::class, NoSuchAlgorithmException::class)
     private fun createInternetIdentityService(): InternetIdentityService {
         setupBouncyCastle()
-        val pemPath = Paths.get(this.fileStoragePath, this.pemFile)
-
-        if (!pemPath.exists() && !this.fileStoragePath.isNullOrEmpty()){
-            LOG.info("no identity found, creating it...")
-            createIdentity()
-        }
 
         LOG.info("starting II service")
 
-        this.devicePemFile = pemPath.toString()
-        val identity: BasicIdentity = BasicIdentity.fromPEMFile(pemPath)
+        val identity: BasicIdentity = getIdentity()
         this.sessionKey = identity.derEncodedPublickey
         val env: Properties = getProperties()
         val iiLocation = env.getProperty("ii.location")
@@ -197,11 +212,10 @@ class CanisterService(fileStoragePath: String) {
         return InternetIdentityService.create(agent, env)
     }
 
-    fun createSkateProxy(): String {
+    suspend fun createSkateProxy(): String = withContext(Dispatchers.IO){
         setupBouncyCastle()
-        val identity: BasicIdentity = BasicIdentity.fromPEMFile(
-            Paths.get(this.fileStoragePath, this.pemFile))
-        this.sessionKey = identity.derEncodedPublickey
+        val identity: BasicIdentity = getIdentity()
+        val sessionKey = identity.derEncodedPublickey
         val env: Properties = getProperties()
         val icLocation = env.getProperty("sc.location")
         val icCanister = env.getProperty("sc.canister")
@@ -210,13 +224,23 @@ class CanisterService(fileStoragePath: String) {
         val skateProxy = ProxyBuilder.create(agent, Principal.fromString(icCanister))
             .getProxy(SkateProxy::class.java)
 
-        val proxyResponse: CompletableFuture<Principal>? = skateProxy.idQuick()
-        LOG.info("proxy response: " + proxyResponse.toString())
+        val principal: Principal = skateProxy.idQuick()
+        LOG.info("canister id: $principal")
 
-        val canisterId = proxyResponse?.get()
-        LOG.info("who am i: " + canisterId.toString())
+        val storeData : CompletableFuture<String> = skateProxy.storeData(
+            "even after changes to the canister code, like now")
+        val storeResult = storeData.get()
+        LOG.info("storeResult: $storeResult")
 
-        return canisterId.toString()
+        val dataStore : Array<Note> = skateProxy.getAllData()
+        val output = StringBuilder()
+        output.append("Stored data:\n")
+        for (entry in dataStore) {
+            output.append("User: ${entry.principal}, Entry: ${entry.value}\n")
+        }
+        LOG.info(output.toString())
+
+        return@withContext principal.toString()
     }
 
     suspend fun lookup(userId: Long) {

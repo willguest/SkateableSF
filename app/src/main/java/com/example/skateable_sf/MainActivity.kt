@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Paths
+import java.security.Principal
 
 
 public class MainActivity : Activity() {
@@ -103,8 +104,9 @@ public class MainActivity : Activity() {
         }
 
         testButton.setOnClickListener {
-            val skateProxy : String = cService.createSkateProxy()
-
+            GlobalScope.launch(Dispatchers.Main) {
+                val pString: String = cService.createSkateProxy()
+            }
 
             //val proxyResponse: CompletableFuture<Principal>? = skateProxy.idQuick()
             //val canisterId = proxyResponse?.get()

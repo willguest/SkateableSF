@@ -51,6 +51,7 @@ android {
             excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
     }
+    buildToolsVersion = "34.0.0"
 }
 
 dependencies {
@@ -85,5 +86,4 @@ dependencies {
     androidTestImplementation(libs.junit.v412)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }
