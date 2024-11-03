@@ -1,10 +1,7 @@
 [versions]
-agp = "8.3.1"
-icUtils = "0.1.0"
-junitJunit = "4.12"
-kotlin = "1.9.0"
-coreKtx = "1.12.0"
-junit = "4.13.2"
+agp = "8.5.2"
+kotlin = "2.0.21"
+coreKtx = "1.13.1"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 kotlinxCoroutinesCore = "1.7.1"
@@ -22,11 +19,11 @@ jackson-datatype-jdk8 = "2.17.1"
 jackson-dataformat-cbor = "2.17.1"
 bouncycastle = "1.78.1"
 testng = "6.9.6"
+junit = "3.8.1"
+junitJunit = "3.8.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-ic-utils = { module = "com.nftstorage:ic-utils", version.ref = "icUtils" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
@@ -43,7 +40,6 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 ic4j-agent = { group = "org.ic4j", name = "ic4j-agent", version.ref = "ic4j" }
 ic4j-candid = { group = "org.ic4j", name = "ic4j-candid", version.ref = "ic4j" }
 ic4j-internetidentity = { group = "org.ic4j", name = "ic4j-internetidentity", version.ref = "ic4j" }
-junit-v412 = { module = "junit:junit", version.ref = "junitJunit" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
 commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "commons-codec" }
@@ -55,8 +51,12 @@ jackson-dataformat-cbor = { group = "com.fasterxml.jackson.dataformat", name = "
 bouncycastle-bcprov-jdk18on = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
 bouncycastle-bcpkix-jdk18on = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
 testng = { module = "org.testng:testng", version.ref = "testng" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+junit-junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
+androidLibrary = { id = "com.android.library", version.ref = "agp"}
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

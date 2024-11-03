@@ -190,7 +190,7 @@ class CanisterService(fileStoragePath: String) {
 
     private fun getProperties() : Properties{
         val propInputStream: InputStream? =
-            javaClass.classLoader.getResourceAsStream(this.PROPERTIES_FILE_NAME)
+            javaClass.classLoader?.getResourceAsStream(this.PROPERTIES_FILE_NAME)
         val p = Properties()
         p.load(propInputStream)
         propInputStream?.close()

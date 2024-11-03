@@ -1,7 +1,6 @@
 package com.example.skateable_sf
 
 import org.junit.Test
-
 import org.junit.Assert.*
 
 /**
