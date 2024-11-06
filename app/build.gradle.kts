@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.compose.compiler)
+    kotlin("kapt")
 }
 
 android {
@@ -17,7 +18,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
-            useSupportLibrary = true
+            useSupportLibrary = false
         }
     }
 
@@ -30,6 +31,11 @@ android {
             )
         }
     }
+    sourceSets {
+        getByName("main") {
+            res.srcDir("src/main/resources")
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -39,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -56,6 +63,7 @@ android {
 }
 
 dependencies {
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.ic4j.agent)
     implementation(libs.ic4j.candid)
@@ -69,15 +77,18 @@ dependencies {
     implementation(libs.jackson.dataformat.cbor)
     implementation(libs.bouncycastle.bcprov.jdk18on)
     implementation(libs.bouncycastle.bcpkix.jdk18on)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.appcompat)
+    implementation(libs.mpandroidchart)
+
+    implementation(libs.support.compat)
+    implementation(libs.design)
+    implementation(libs.support.fragment)
+
+    implementation(libs.butterknife)
+    implementation(libs.androidx.drawerlayout)
+    kapt(libs.butterknife.compiler)
+
+    implementation(libs.guava)
+    implementation(libs.androidx.runtime)
     testImplementation(libs.junit)
     testImplementation(libs.testng)
     androidTestImplementation(libs.androidx.junit)
@@ -86,7 +97,12 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.testng)
     androidTestImplementation(libs.junit)
-    androidTestImplementation(libs.junit.junit)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+
+    annotationProcessor(libs.butterknife.compiler)
 }
+
+kapt {
+    generateStubs = true
+}
+
+apply(plugin = "com.jakewharton.butterknife")

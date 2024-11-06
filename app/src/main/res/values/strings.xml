@@ -1,5 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2013 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain acc copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
 <resources>
-    <string name="app_name">Skateable-SF</string>
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="no_data" translatable="false">No data</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="title_devices" translatable="false">BLE Device Scan</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+
+    <string name="unknown_device" translatable="false">Unknown device</string>
+    <string name="unknown_characteristic" translatable="false">Unknown characteristic</string>
+    <string name="unknown_service" translatable="false">Unknown service</string>
+
+    <!-- Menu items -->
+    <string name="app_name">WT901BLE</string>
+    <string name="menu_connect">Connect</string>
+    <string name="menu_disconnect">Disconnect</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+    <string name="SelectRate">Sampling rate for all sensors:</string>
+    <string name="OK">OK</string>
+    <string name="Cancel">Cancel</string>
+    <string name="SelectPortMode">Please select port mode:</string>
+    <string name="Finish">Finish</string>
+    <string name="MagCali">MagCali</string>
+    <string name="Acc">Acc</string>
+    <string name="AngleVelocity">w</string>
+    <string name="Angle">Angle</string>
+    <string name="Mag">Mag</string>
+    <string name="Pressure">Press</string>
+    <string name="Port">Port</string>
+    <string name="Quater">Quart</string>
+    <string name="AccCali">Acc Cali</string>
+    <string name="AccCaliL">Acc Cali L</string>
+    <string name="AccCaliR">Acc Cali R</string>
+    <string name="Rate">Sampling Rate</string>
+    <string name="Save">Save</string>
+    <string name="Resume">Factory reset</string>
+    <string name="Rename">Rename</string>
+    <string name="Setting">Set</string>
+    <string name="Record">Record</string>
+    <string name="start_time">start_time</string>
+    <string name="hint">Hint</string>
+    <string name="data_record">Record data to the root directory：</string>
+    <string name="open_file">open file ？</string>
+    <string name="EnterNewName">Please enter new name:</string>
+    <string name="Reset">Set OK, please reset device!</string>
+    <string name="EnterName">Please enter a new name!</string>
+    <string name="sure">Sure</string>
+    <string name="abolish">abolish</string>
+    <string name="sensor_status_channel">Sensor status</string>
+    <string name="recording">Recording</string>
+    <string name="not_recording">Not recording</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="not_connected">Not connected</string>
+    <string name="chart">Chart</string>
+    <string name="mark">Note</string>
+    <string name="connect_other">Connect to other</string>
+    <string name="gyr">Gyr</string>
+    <string name="connect_failed">Failed to connect</string>
+    <string name="recording_waiting_reconnect">Recording, waiting for reconnect</string>
+    <string name="pick_use">Select sensors to use</string>
+    <string name="refresh">Refresh</string>
+    <string name="okay">Okay</string>
+    <string name="recording_status">Recording - %d out of %d connected</string>
+    <string name="not_recording_status">%d out of %d connected</string>
+    <string name="error">An Error occurred</string>
+    <string name="status_">Status:</string>
+    <string name="battery_">Battery:</string>
+    <string name="address_">Address:</string>
+    <string name="SelectNoteValue">Select note value</string>
+    <string name="add_note">Add Note</string>
+    <string name="start_baseline">Baseline start</string>
+    <string name="end_baseline">Baseline end</string>
+    <string name="recording_baseline">Recording baseline</string>
+    <string name="failed_set_rate">Failed to set sampling rate</string>
+    <string name="integrity_check_message">Warning: %d devices recorded suspiciously little data</string>
+
     <string name="register">Register</string>
     <string name="create_challenge">Create challenge</string>
     <string name="create_identity">Create identity</string>
@@ -21,4 +110,14 @@
     <string name="get_challenge">Get Challenge</string>
     <string name="test">Test</string>
     <string name="make_identity">Make Identity</string>
+
+    <string-array
+        name="mark_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
 </resources>

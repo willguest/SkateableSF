@@ -1,15 +1,17 @@
 [versions]
 agp = "8.5.2"
+butterknife = "8.4.0"
+butterknifeGradlePlugin = "10.2.3"
+design = "28.0.0"
+guava = "27.0.1-android"
 kotlin = "2.0.21"
-coreKtx = "1.13.1"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 kotlinxCoroutinesCore = "1.7.1"
-lifecycleRuntimeKtx = "2.7.0"
-activityCompose = "1.7.0"
 composeBom = "2023.08.00"
-appcompat = "1.7.0"
 ic4j = "0.7.0"
+mpandroidchart = "v3.0.3"
+runtime = "1.7.5"
 slf4j = "2.0.13"
 commons-codec = "1.17.0"
 commons-lang = "3.14.0"
@@ -18,29 +20,27 @@ jackson-databind = "2.17.1"
 jackson-datatype-jdk8 = "2.17.1"
 jackson-dataformat-cbor = "2.17.1"
 bouncycastle = "1.78.1"
+supportCompat = "28.0.0"
+supportFragment = "28.0.0"
 testng = "6.9.6"
 junit = "3.8.1"
-junitJunit = "3.8.1"
+drawerlayout = "1.2.0"
 
 [libraries]
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+butterknife = { module = "com.jakewharton:butterknife", version.ref = "butterknife" }
+butterknife-compiler = { group = "com.jakewharton", name = "butterknife-compiler", version.ref = "butterknife" }
+butterknife-gradle-plugin = { module = "com.jakewharton:butterknife-gradle-plugin", version.ref = "butterknifeGradlePlugin" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
 ic4j-agent = { group = "org.ic4j", name = "ic4j-agent", version.ref = "ic4j" }
 ic4j-candid = { group = "org.ic4j", name = "ic4j-candid", version.ref = "ic4j" }
 ic4j-internetidentity = { group = "org.ic4j", name = "ic4j-internetidentity", version.ref = "ic4j" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
 slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
 commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "commons-codec" }
 commons-lang = { group = "org.apache.commons", name = "commons-lang3", version.ref = "commons-lang" }
@@ -50,9 +50,12 @@ jackson-datatype-jdk8 = { group = "com.fasterxml.jackson.datatype", name = "jack
 jackson-dataformat-cbor = { group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-cbor", version.ref = "jackson-dataformat-cbor" }
 bouncycastle-bcprov-jdk18on = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
 bouncycastle-bcpkix-jdk18on = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
+design = { module = "com.android.support:design", version.ref = "design" }
+support-compat = { module = "com.android.support:support-compat", version.ref = "supportCompat" }
+support-fragment = { module = "com.android.support:support-fragment", version.ref = "supportFragment" }
 testng = { module = "org.testng:testng", version.ref = "testng" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-junit-junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
+androidx-drawerlayout = { group = "androidx.drawerlayout", name = "drawerlayout", version.ref = "drawerlayout" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

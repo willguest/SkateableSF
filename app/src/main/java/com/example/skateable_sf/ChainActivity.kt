@@ -17,13 +17,12 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Paths
-import java.security.Principal
 
 
-public class MainActivity : Activity() {
+public class ChainActivity : Activity() {
 
     private lateinit var cService: CanisterService
-    private var LOG: Logger = LoggerFactory.getLogger(MainActivity::class.java)
+    private var LOG: Logger = LoggerFactory.getLogger(ChainActivity::class.java)
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +47,7 @@ public class MainActivity : Activity() {
         getChallenge.setOnClickListener {
                 val challenge = cService.createChallenge()
                 val captchaPath = Paths.get(applicationContext.filesDir.path,
-                    "challenge.png").toString()
+                    "resOld/challenge.png").toString()
 
                 // Display key for registration
                 challengeKeyEditText.setText(challenge.challengeKey)

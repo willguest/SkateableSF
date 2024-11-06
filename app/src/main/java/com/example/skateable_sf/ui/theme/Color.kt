@@ -1,11 +1,11 @@
 package com.example.skateable_sf.ui.theme
 
-import androidx.compose.ui.graphics.Color
+import android.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val Purple80 = Color.rgb(0xD0, 0xBC, 0xFF)
+val PurpleGrey80 = Color.rgb(0xCC, 0xC2, 0xDC)
+val Pink80 = Color.rgb(0xEF, 0xB8, 0xC8)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val Purple40 = Color.rgb(0x66, 0x50, 0xA4)
+val PurpleGrey40 = Color.rgb(0x62, 0x5B, 0x71)
+val Pink40 = Color.rgb(0x7D, 0x52, 0x60)
