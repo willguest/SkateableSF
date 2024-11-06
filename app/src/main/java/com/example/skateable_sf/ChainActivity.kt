@@ -8,6 +8,7 @@ import android.util.Base64
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -17,6 +18,8 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Paths
+
+import com.example.skateable_sf.WT901BLE.R
 
 
 public class ChainActivity : Activity() {

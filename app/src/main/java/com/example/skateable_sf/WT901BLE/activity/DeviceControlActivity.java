@@ -60,13 +60,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.example.skateable_sf.R2;
+import com.example.skateable_sf.WT901BLE.R;
+import com.example.skateable_sf.WT901BLE.databinding.ActDeviceBinding;
+import com.example.skateable_sf.WT901BLE.databinding.GattServicesCharacteristicsBinding; // this is the new pattern, without butterknife
+import com.example.skateable_sf.WT901BLE.databinding.DeviceSpinnerItemBinding;
 
 import static com.example.skateable_sf.WT901BLE.Constants.*;
 
 
 public class DeviceControlActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, ViewPager.OnPageChangeListener {
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
+
+    private GattServicesCharacteristicsBinding binding;
+    private DeviceSpinnerItemBinding spinnerBinding;
+    private ActDeviceBinding deviceBinding;
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
@@ -136,7 +143,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                 if (mService.connectAll(mToConnectTo)) {
                     mToConnectTo = null;
                 } else {
-                    Toast.makeText(DeviceControlActivity.this, getString(R2.string.connect_failed), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DeviceControlActivity.this, getString(R.string.connect_failed), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -174,14 +181,14 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
 
     private void switchToTab(int id) {
         View v = findViewById(id);
-        if (id == R2.id.btnAcc) {
+        if (id == R.id.btnAcc) {
             mViewPager.setVisibility(View.GONE);
             mLayout.setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R2.id.tvTittleX)).setText("ax:");
-            ((TextView) findViewById(R2.id.tvTittleY)).setText("ay:");
-            ((TextView) findViewById(R2.id.tvTittleZ)).setText("az:");
+            ((TextView) findViewById(R.id.tvTittleX)).setText("ax:");
+            ((TextView) findViewById(R.id.tvTittleY)).setText("ay:");
+            ((TextView) findViewById(R.id.tvTittleZ)).setText("az:");
             tvZ.setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R2.id.tvTittleAll)).setText("|acc|:");
+            ((TextView) findViewById(R.id.tvTittleAll)).setText("|acc|:");
             tvAll.setVisibility(View.VISIBLE);
             lineChart.clear();
             new Handler().postDelayed(new Runnable() {
@@ -194,7 +201,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
 
             DisplayIndex = 0;
             SetCurrentTab(v);
-        } else if (id == R2.id.btnGyro) {
+        } else if (id == R.id.btnGyro) {
             mViewPager.setVisibility(View.GONE);
             mLayout.setVisibility(View.VISIBLE);
             lineChart.clear();
@@ -206,16 +213,16 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                 }
             }, 600);
             DisplayIndex = 1;
-            ((TextView) findViewById(R2.id.tvTittleX)).setText("wx:");
-            ((TextView) findViewById(R2.id.tvTittleY)).setText("wy:");
-            ((TextView) findViewById(R2.id.tvTittleZ)).setText("wz:");
+            ((TextView) findViewById(R.id.tvTittleX)).setText("wx:");
+            ((TextView) findViewById(R.id.tvTittleY)).setText("wy:");
+            ((TextView) findViewById(R.id.tvTittleZ)).setText("wz:");
             tvZ.setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R2.id.tvTittleAll)).setText("|gyr|:");
+            ((TextView) findViewById(R.id.tvTittleAll)).setText("|gyr|:");
             tvAll.setVisibility(View.VISIBLE);
             SetCurrentTab(v);
 
 
-        } else if (id == R2.id.btnAngle) {
+        } else if (id == R.id.btnAngle) {
             lineChart.clear();
             lineChartManager = new LineChartManager(lineChart, angleNames, angleColour);
             lineChartManager.setDescription("");
@@ -231,7 +238,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
             mViewPager.setAdapter(adapter);
             mViewPager.setOnPageChangeListener(this);
 
-        } else if (id == R2.id.btnMag) {
+        } else if (id == R.id.btnMag) {
             mViewPager.setVisibility(View.GONE);
             mLayout.setVisibility(View.VISIBLE);
             lineChart.clear();
@@ -243,17 +250,17 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                 }
             }, 600);
 
-            ((TextView) findViewById(R2.id.tvTittleX)).setText("hx:");
-            ((TextView) findViewById(R2.id.tvTittleY)).setText("hy:");
-            ((TextView) findViewById(R2.id.tvTittleZ)).setText("hz:");
+            ((TextView) findViewById(R.id.tvTittleX)).setText("hx:");
+            ((TextView) findViewById(R.id.tvTittleY)).setText("hy:");
+            ((TextView) findViewById(R.id.tvTittleZ)).setText("hz:");
             tvZ.setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R2.id.tvTittleAll)).setText("|magn|");
+            ((TextView) findViewById(R.id.tvTittleAll)).setText("|magn|");
             tvAll.setVisibility(View.VISIBLE);
             SetCurrentTab(v);
             DisplayIndex = 3;
 
 
-        } else if (id == R2.id.btnPressure) {
+        } else if (id == R.id.btnPressure) {
             mViewPager.setVisibility(View.GONE);
             mLayout.setVisibility(View.VISIBLE);
             lineChart.clear();
@@ -265,17 +272,17 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                 }
             }, 600);
 
-            ((TextView) findViewById(R2.id.tvTittleX)).setText("pressure:");
-            ((TextView) findViewById(R2.id.tvTittleY)).setText("altitude:");
-            ((TextView) findViewById(R2.id.tvTittleZ)).setText("");
+            ((TextView) findViewById(R.id.tvTittleX)).setText("pressure:");
+            ((TextView) findViewById(R.id.tvTittleY)).setText("altitude:");
+            ((TextView) findViewById(R.id.tvTittleZ)).setText("");
             tvZ.setVisibility(View.INVISIBLE);
-            ((TextView) findViewById(R2.id.tvTittleAll)).setText("");
+            ((TextView) findViewById(R.id.tvTittleAll)).setText("");
             tvAll.setVisibility(View.INVISIBLE);
             SetCurrentTab(v);
             DisplayIndex = 4;
 
 
-        } else if (id == R2.id.btnPort) {
+        } else if (id == R.id.btnPort) {
             mViewPager.setVisibility(View.GONE);
             mLayout.setVisibility(View.VISIBLE);
             lineChart.clear();
@@ -287,17 +294,17 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                 }
             }, 600);
 
-            ((TextView) findViewById(R2.id.tvTittleX)).setText("D0:");
-            ((TextView) findViewById(R2.id.tvTittleY)).setText("D1:");
-            ((TextView) findViewById(R2.id.tvTittleZ)).setText("D2");
+            ((TextView) findViewById(R.id.tvTittleX)).setText("D0:");
+            ((TextView) findViewById(R.id.tvTittleY)).setText("D1:");
+            ((TextView) findViewById(R.id.tvTittleZ)).setText("D2");
             tvZ.setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R2.id.tvTittleAll)).setText("D3");
+            ((TextView) findViewById(R.id.tvTittleAll)).setText("D3");
             tvAll.setVisibility(View.VISIBLE);
             SetCurrentTab(v);
             DisplayIndex = 5;
 
 
-        } else if (id == R2.id.btnQuater) {
+        } else if (id == R.id.btnQuater) {
             mViewPager.setVisibility(View.GONE);
             mLayout.setVisibility(View.VISIBLE);
             lineChart.clear();
@@ -309,11 +316,11 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                 }
             }, 600);
 
-            ((TextView) findViewById(R2.id.tvTittleX)).setText("q0:");
-            ((TextView) findViewById(R2.id.tvTittleY)).setText("q1:");
-            ((TextView) findViewById(R2.id.tvTittleZ)).setText("q2");
+            ((TextView) findViewById(R.id.tvTittleX)).setText("q0:");
+            ((TextView) findViewById(R.id.tvTittleY)).setText("q1:");
+            ((TextView) findViewById(R.id.tvTittleZ)).setText("q2");
             tvZ.setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R2.id.tvTittleAll)).setText("q3");
+            ((TextView) findViewById(R.id.tvTittleAll)).setText("q3");
             tvAll.setVisibility(View.VISIBLE);
             SetCurrentTab(v);
             DisplayIndex = 6;
@@ -324,7 +331,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
         SharedPreferences mySharedPreferences= getSharedPreferences("Output", Activity.MODE_PRIVATE);
         mOutputRate = mySharedPreferences.getInt("Rate", 6);
         new AlertDialog.Builder(this)
-                .setTitle(R2.string.SelectRate)
+                .setTitle(R.string.SelectRate)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setSingleChoiceItems(new String[]{"0.1Hz", "0.2Hz", "0.5Hz", "1Hz", "2Hz", "5Hz", "10Hz", "20Hz", "50Hz"}, mOutputRate, new DialogInterface.OnClickListener() {
                     @Override
@@ -332,7 +339,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                         mOutputRate = i;
                     }
                 })
-                .setPositiveButton(R2.string.OK, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         SharedPreferences mySharedPreferences = getSharedPreferences("Output",Activity.MODE_PRIVATE);
@@ -340,11 +347,11 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                         editor.putInt("Rate", mOutputRate);
                         editor.commit();
                         if (!mService.setRateAll(mOutputRate)) {
-                            Toast.makeText(DeviceControlActivity.this, R2.string.failed_set_rate, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DeviceControlActivity.this, R.string.failed_set_rate, Toast.LENGTH_SHORT).show();
                         }
                     }
                 })
-                .setNegativeButton(R2.string.Cancel, null)
+                .setNegativeButton(R.string.Cancel, null)
                 .show();
     }
 
@@ -372,7 +379,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     private void SetPortMode(final int iPortIndex) {
         iPortMode = 0;
         new AlertDialog.Builder(this)
-                .setTitle(R2.string.SelectPortMode)
+                .setTitle(R.string.SelectPortMode)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setSingleChoiceItems(new String[]{"AIn", "DIn", "DOutH", "DOutL"}, 0, new DialogInterface.OnClickListener() {
                     @Override
@@ -380,15 +387,16 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                         iPortMode = i;
                     }
                 })
-                .setPositiveButton(R2.string.OK, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) (0x0E + iPortIndex), (byte) iPortMode, (byte) 0x00});
                     }
                 })
-                .setNegativeButton(R2.string.Cancel, null)
+                .setNegativeButton(R.string.Cancel, null)
                 .show();
     }
+
 
 
     private boolean once = false;
@@ -396,41 +404,34 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R2.layout.gatt_services_characteristics);
+
+        binding = GattServicesCharacteristicsBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
+        btnAcc = binding.btnAcc;
+        btnGyro = binding.btnGyro;
+        btnAngle = binding.btnAngle;
+        btnMag = binding.btnMag;
+        btnPressure = binding.btnPressure;
+        btnPort = binding.btnPort;
+        btnQuater = binding.btnQuater;
+        lineChart = binding.lineChart;
+        tvX = binding.tvX;
+        tvY = binding.tvY;
+        tvZ = binding.tvZ;
+        tvAll = binding.tvAll;
+        tvCell = binding.tvCell;
+        tvStatus = binding.tvStatus;
+        tvAddress = binding.tvAddress;
+        mViewPager = binding.mViewPager;
+        mLayout = binding.mLayout;
+
+        //setContentView(R.layout.gatt_services_characteristics);
 
         configureNavigationDrawer();
         configureToolbar();
 
-        // viewpager  linearlayout
-        mViewPager = (ViewPager) findViewById(R2.id.mViewPager);
-        mLayout = (LinearLayout) findViewById(R2.id.mLayout);
-
-        btnAcc = (Button) findViewById(R2.id.btnAcc);
-        btnAcc.setOnClickListener(this);
-        btnGyro = (Button) findViewById(R2.id.btnGyro);
-        btnGyro.setOnClickListener(this);
-        btnAngle = (Button) findViewById(R2.id.btnAngle);
-        btnAngle.setOnClickListener(this);
-        btnMag = (Button) findViewById(R2.id.btnMag);
-        btnMag.setOnClickListener(this);
-        btnPressure = (Button) findViewById(R2.id.btnPressure);
-        btnPressure.setOnClickListener(this);
-        btnPort = (Button) findViewById(R2.id.btnPort);
-        btnPort.setOnClickListener(this);
-        btnQuater = (Button) findViewById(R2.id.btnQuater);
-        btnQuater.setOnClickListener(this);
-
-        lineChart = (LineChart) findViewById(R2.id.lineChart);
-        initChart();
-        tvX = (TextView) findViewById(R2.id.tvX);
-        tvY = (TextView) findViewById(R2.id.tvY);
-        tvZ = (TextView) findViewById(R2.id.tvZ);
-        tvAll = (TextView) findViewById(R2.id.tvAll);
-        tvCell = (TextView) findViewById(R2.id.tv_cell);
-        tvStatus = (TextView) findViewById(R2.id.tv_status);
-        tvAddress = (TextView) findViewById(R2.id.tv_address);
-
-        onClick(findViewById(R2.id.btnAngle));
 
         if (!BluetoothLeService.isRunning) {
             Set<String> usedDevices = getUsedDevices();
@@ -474,7 +475,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                         if (mService.connectAll(mToConnectTo)) {
                             mToConnectTo = null;
                         } else {
-                            Toast.makeText(DeviceControlActivity.this, getString(R2.string.connect_failed), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DeviceControlActivity.this, getString(R.string.connect_failed), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -617,22 +618,22 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                     }
 
                     if (data.getBattery() < 680) {
-                        tvCell.setBackground(getResources().getDrawable(R2.drawable.cell1));
+                        tvCell.setBackground(getResources().getDrawable(R.drawable.cell1));
                     }
                     if (data.getBattery() >= 680 && data.getBattery() < 735) {
-                        tvCell.setBackground(getResources().getDrawable(R2.drawable.cell2));
+                        tvCell.setBackground(getResources().getDrawable(R.drawable.cell2));
                     }
 
                     if (data.getBattery() >= 745 && data.getBattery() < 775) {
-                        tvCell.setBackground(getResources().getDrawable(R2.drawable.cell3));
+                        tvCell.setBackground(getResources().getDrawable(R.drawable.cell3));
                     }
 
                     if (data.getBattery() >= 775 && data.getBattery() < 850) {
-                        tvCell.setBackground(getResources().getDrawable(R2.drawable.cell4));
+                        tvCell.setBackground(getResources().getDrawable(R.drawable.cell4));
                     }
 
                     if (data.getBattery() >= 850) {
-                        tvCell.setBackground(getResources().getDrawable(R2.drawable.cell5));
+                        tvCell.setBackground(getResources().getDrawable(R.drawable.cell5));
                     }
                 }
             });
@@ -646,8 +647,8 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mNavView.getMenu().findItem(R2.id.action_connect).setTitle(R2.string.menu_disconnect);
-                    Toast.makeText(DeviceControlActivity.this, R2.string.connected, Toast.LENGTH_SHORT).show();
+                    mNavView.getMenu().findItem(R.id.action_connect).setTitle(R.string.menu_disconnect);
+                    Toast.makeText(DeviceControlActivity.this, R.string.connected, Toast.LENGTH_SHORT).show();
                     invalidateOptionsMenu();
                     refreshStatus();
                 }
@@ -662,8 +663,8 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mNavView.getMenu().findItem(R2.id.action_connect).setTitle(R2.string.menu_connect);
-                    Toast.makeText(DeviceControlActivity.this, R2.string.disconnected, Toast.LENGTH_SHORT).show();
+                    mNavView.getMenu().findItem(R.id.action_connect).setTitle(R.string.menu_connect);
+                    Toast.makeText(DeviceControlActivity.this, R.string.disconnected, Toast.LENGTH_SHORT).show();
                     invalidateOptionsMenu();
                     refreshStatus();
                 }
@@ -672,35 +673,35 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     };
 
     private void configureToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R2.id.my_toolbar);
-        setSupportActionBar(toolbar);
+        deviceBinding = ActDeviceBinding.inflate(getLayoutInflater());
+        View deviceView = deviceBinding.getRoot();
+        Toolbar toolbar = deviceView.findViewById(R.id.my_toolbar);
+        //setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
-        actionbar.setHomeAsUpIndicator(R2.drawable.ic_drawer);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_drawer);
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(false);
     }
 
     private void refreshDevicesDropdown() {
-        Spinner spinnerNav = findViewById(R2.id.spinner_nav);
+
+        Spinner spinnerNav = binding.spinnerNav;
+        //spinnerBinding = DeviceSpinnerItemBinding.inflate(getLayoutInflater());
+
         final Set<Pair<String, String>> usedDevices = getUsedDeviceNames();
         final ArrayList<Pair<String, String>> spinnerArray = new ArrayList<>(usedDevices);
-        Collections.sort(spinnerArray, new Comparator<Pair<String, String>>() {
-            @Override
-            public int compare(Pair<String, String> p1, Pair<String, String> p2) {
-                return p1.first.compareTo(p2.first);
-            }
-        });
+        spinnerArray.sort(Comparator.comparing(p -> p.first));
         final ArrayList<String> onlyNames = new ArrayList<>();
         for (Pair<String, String> p : spinnerArray) {
             onlyNames.add(p.second);
         }
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(this, R2.layout.device_spinner_item, onlyNames);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(this, R.layout.device_spinner_item, onlyNames);
         spinnerNav.setAdapter(spinnerArrayAdapter);
         spinnerNav.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 mCurrentDevice = spinnerArray.get(i).first;
-                switchToTab(R2.id.btnAcc);
+                switchToTab(R.id.btnAcc);
                 refreshStatus();
             }
 
@@ -715,32 +716,32 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
         String statusStr;
 
         if (mService != null && mService.isConnected(mCurrentDevice)) {
-            mNavView.getMenu().findItem(R2.id.action_connect).setTitle(R2.string.menu_disconnect);
-            statusStr = getString(R2.string.connected);
+            mNavView.getMenu().findItem(R.id.action_connect).setTitle(R.string.menu_disconnect);
+            statusStr = getString(R.string.connected);
         } else {
-            mNavView.getMenu().findItem(R2.id.action_connect).setTitle(R2.string.menu_connect);
-            statusStr = getString(R2.string.disconnected);
+            mNavView.getMenu().findItem(R.id.action_connect).setTitle(R.string.menu_connect);
+            statusStr = getString(R.string.disconnected);
         }
 
         if (mService != null && mService.isRecording()) {
             if (mService.isRecordingBaseline())
-                statusStr += ", " + getString(R2.string.recording_baseline).toLowerCase();
+                statusStr += ", " + getString(R.string.recording_baseline).toLowerCase();
             else
-                statusStr += ", " + getString(R2.string.recording).toLowerCase();
-            mNavView.getMenu().findItem(R2.id.action_mark).setEnabled(true);
+                statusStr += ", " + getString(R.string.recording).toLowerCase();
+            mNavView.getMenu().findItem(R.id.action_mark).setEnabled(true);
         } else {
-            mNavView.getMenu().findItem(R2.id.action_mark).setEnabled(false);
+            mNavView.getMenu().findItem(R.id.action_mark).setEnabled(false);
         }
 
-        mNavView.getMenu().findItem(R2.id.action_baseline).setEnabled(mService != null && mService.isRecording());
+        mNavView.getMenu().findItem(R.id.action_baseline).setEnabled(mService != null && mService.isRecording());
         if (mService != null && mService.isRecordingBaseline()) {
-            mNavView.getMenu().findItem(R2.id.action_baseline).setTitle(R2.string.end_baseline);
+            mNavView.getMenu().findItem(R.id.action_baseline).setTitle(R.string.end_baseline);
         } else {
-            mNavView.getMenu().findItem(R2.id.action_baseline).setTitle(R2.string.start_baseline);
+            mNavView.getMenu().findItem(R.id.action_baseline).setTitle(R.string.start_baseline);
         }
 
-        for (int id : new int[] {R2.id.action_resume, R2.id.action_acli, R2.id.action_cali_l, R2.id.action_cali_r, R2.id.action_magcali,
-                                 R2.id.action_d0, R2.id.action_d1, R2.id.action_d2, R2.id.action_d3, R2.id.action_rename}) {
+        for (int id : new int[] {R.id.action_resume, R.id.action_acli, R.id.action_cali_l, R.id.action_cali_r, R.id.action_magcali,
+                                 R.id.action_d0, R.id.action_d1, R.id.action_d2, R.id.action_d3, R.id.action_rename}) {
             mNavView.getMenu().findItem(id).setEnabled(mService != null && mService.isConnected(mCurrentDevice));
         }
 
@@ -750,8 +751,8 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     }
 
     private void configureNavigationDrawer() {
-        draw = (DrawerLayout) findViewById(R2.id.drawerLayout);
-        mNavView = (NavigationView) findViewById(R2.id.nv_layout);
+        draw = (DrawerLayout) findViewById(R.id.drawerLayout);
+        mNavView = (NavigationView) findViewById(R.id.nv_layout);
         mNavView.setNavigationItemSelectedListener(this);
     }
 
@@ -860,7 +861,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R2.menu.act_device_control, menu);
+        inflater.inflate(R.menu.act_device_control, menu);
         return true;
     }
 
@@ -896,11 +897,11 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int i = item.getItemId();
-        if (i == R2.id.menu_connect) {
+        if (i == R.id.menu_connect) {
             Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
             bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
             return true;
-        } else if (i == R2.id.menu_disconnect) {
+        } else if (i == R.id.menu_disconnect) {
             mService.disconnect(mCurrentDevice, true);
             if (mService != null) {
                 unbindService(mServiceConnection);
@@ -910,16 +911,16 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
         } else if (i == android.R.id.home) {
             draw.openDrawer(GravityCompat.START);
             return true;
-        } else if (i == R2.id.action_record) {
+        } else if (i == R.id.action_record) {
             if (mService == null || !mService.isAnyConnected())
                 return true;
             if (mService.isRecording()) {
                 if (mService.getPath(mCurrentDevice) != null) {
                     new AlertDialog.Builder(DeviceControlActivity.this)
-                            .setTitle(getString(R2.string.hint))
+                            .setTitle(getString(R.string.hint))
                             .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setMessage(getString(R2.string.data_record) + mService.getPath(mCurrentDevice).toString() + "\n" + getString(R2.string.open_file))
-                            .setPositiveButton(R2.string.OK, new DialogInterface.OnClickListener() {
+                            .setMessage(getString(R.string.data_record) + mService.getPath(mCurrentDevice).toString() + "\n" + getString(R.string.open_file))
+                            .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface arg0, int arg1) {
                                     Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".fileprovider",
@@ -930,10 +931,10 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                                     startActivity(intent);
                                 }
                             })
-                            .setNegativeButton(getString(R2.string.Cancel), null)
+                            .setNegativeButton(getString(R.string.Cancel), null)
                             .show();
                 } else {
-                    Toast.makeText(this, R2.string.error, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -950,14 +951,14 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem recordingItem = menu.findItem(R2.id.action_record);
+        MenuItem recordingItem = menu.findItem(R.id.action_record);
 
         if (mService != null && mService.isRecording()) {
-            recordingItem.setIcon(R2.drawable.ic_stop);
-            recordingItem.setTitle(R2.string.menu_stop);
+            recordingItem.setIcon(R.drawable.ic_stop);
+            recordingItem.setTitle(R.string.menu_stop);
         } else {
-            recordingItem.setIcon(R2.drawable.ic_record);
-            recordingItem.setTitle(R2.string.Record);
+            recordingItem.setIcon(R.drawable.ic_record);
+            recordingItem.setTitle(R.string.Record);
         }
 
         return true;
@@ -985,154 +986,136 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
         Fragment f = null;
         int itemId = menuItem.getItemId();
 
-        switch (itemId) {
-            case R2.id.action_mark:
-                if (mService != null && mService.isRecording()) {
-                    final EditText editText = new EditText(DeviceControlActivity.this);
-                    AlertDialog.Builder inputDialog =
-                            new AlertDialog.Builder(DeviceControlActivity.this);
-                    inputDialog.setTitle(R2.string.add_note).setView(editText);
-                    inputDialog.setPositiveButton(R2.string.OK,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mService.addMarkAll(editText.getText().toString());
-                                }
-                            });
-                    inputDialog.setNegativeButton(R2.string.Cancel,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(DeviceControlActivity.this,
-                                            R2.string.Cancel,
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }).show();
-                }
-                break;
-            case R2.id.action_baseline:
-                if (mService != null)
-                    mService.toggleRecordingBaseline();
-                refreshStatus();
-                break;
-
-            case R2.id.action_chart:
-                Intent intent = new Intent(DeviceControlActivity.this, ChartActivity.class);
-                intent.putExtra("device", mCurrentDevice);
-                startActivity(intent);
-                break;
-            case R2.id.action_acli:
-                if (!myAcli) {
-                    mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x01, (byte) 0x00});
-                    mNavView.getMenu().findItem(R2.id.action_acli).setTitle(R2.string.Finish);
-                    myAcli = true;
-                } else {
-                    mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x00, (byte) 0x00});
-                    mNavView.getMenu().findItem(R2.id.action_acli).setTitle(R2.string.AccCali);
-                    myAcli = false;
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x00, (byte) 0x00, (byte) 0x00});
-                        }
-                    }, 20);
-                }
-                break;
-            case R2.id.action_cali_l:
-                mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x05, (byte) 0x00});
-                break;
-            case R2.id.action_cali_r:
-                mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x06, (byte) 0x00});
-                break;
-            case R2.id.action_magcali:
-                if (!bMagCali) {
-                    mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x07, (byte) 0x00});
-                    mNavView.getMenu().findItem(R2.id.action_magcali).setTitle(R2.string.Finish);
-                    bMagCali = true;
-                } else {
-                    mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x00, (byte) 0x00});
-                    mNavView.getMenu().findItem(R2.id.action_magcali).setTitle(R2.string.MagCali);
-                    bMagCali = false;
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x00, (byte) 0x00, (byte) 0x00});
-                        }
-                    }, 100);
-                }
-                break;
-            case R2.id.action_d0:
-                SetPortMode(0);
-                break;
-            case R2.id.action_d1:
-                SetPortMode(1);
-                break;
-            case R2.id.action_d2:
-                SetPortMode(2);
-                break;
-            case R2.id.action_d3:
-                SetPortMode(3);
-                break;
-            case R2.id.action_rate:
-                Rate();
-                break;
-            case R2.id.action_resume:
-                mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x00, (byte) 0x01, (byte) 0x00});
-                break;
-            case R2.id.action_rename:
+        if (itemId == R.id.action_mark) {
+            if (mService != null && mService.isRecording()) {
                 final EditText editText = new EditText(DeviceControlActivity.this);
                 AlertDialog.Builder inputDialog =
                         new AlertDialog.Builder(DeviceControlActivity.this);
-                inputDialog.setTitle(R2.string.EnterNewName).setView(editText);
-                inputDialog.setPositiveButton(R2.string.OK,
+                inputDialog.setTitle(R.string.add_note).setView(editText);
+                inputDialog.setPositiveButton(R.string.OK,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
-                                String value= editText.getText().toString();
-                                if (value.length()>10) value = value.substring(0,9);
-                                if (value != null && !value.equals("")) {
-                                    String name = "WIT-" + value + "\r\n";
-                                    Log.e("------", "WT====" + name);
-                                    mService.writeByes(mCurrentDevice, name.getBytes());
-                                    Toast.makeText(DeviceControlActivity.this, R2.string.Reset, Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(DeviceControlActivity.this, R2.string.EnterName, Toast.LENGTH_SHORT).show();
-                                }
+                                mService.addMarkAll(editText.getText().toString());
                             }
                         });
-                inputDialog.setNegativeButton(R2.string.Cancel,
+                inputDialog.setNegativeButton(R.string.Cancel,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Toast.makeText(DeviceControlActivity.this,
-                                        R2.string.Cancel,
+                                        R.string.Cancel,
                                         Toast.LENGTH_SHORT).show();
                             }
                         }).show();
-                break;
-            case R2.id.action_connect:
-                if (mService.isAnyConnected()) {
-                    // disconnect
-                    if (mService != null) {
-                        mService.disconnect(mCurrentDevice, true);
+            }
+        } else if (itemId == R.id.action_baseline) {
+            if (mService != null)
+                mService.toggleRecordingBaseline();
+            refreshStatus();
+        } else if (itemId == R.id.action_chart) {
+            Intent intent = new Intent(DeviceControlActivity.this, ChartActivity.class);
+            intent.putExtra("device", mCurrentDevice);
+            startActivity(intent);
+        } else if (itemId == R.id.action_acli) {
+            if (!myAcli) {
+                mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x01, (byte) 0x00});
+                mNavView.getMenu().findItem(R.id.action_acli).setTitle(R.string.Finish);
+                myAcli = true;
+            } else {
+                mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x00, (byte) 0x00});
+                mNavView.getMenu().findItem(R.id.action_acli).setTitle(R.string.AccCali);
+                myAcli = false;
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x00, (byte) 0x00, (byte) 0x00});
                     }
-                } else {
-                    // connect
-                    Set<String> usedDevices = getUsedDevices();
-                    if (mService != null) {
-                        if (!mService.connectAll(usedDevices)) {
-                            Toast.makeText(DeviceControlActivity.this, getString(R2.string.connect_failed), Toast.LENGTH_SHORT).show();
+                }, 20);
+            }
+        } else if (itemId == R.id.action_cali_l) {
+            mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x05, (byte) 0x00});
+        } else if (itemId == R.id.action_cali_r) {
+            mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x06, (byte) 0x00});
+        } else if (itemId == R.id.action_magcali) {
+            if (!bMagCali) {
+                mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x07, (byte) 0x00});
+                mNavView.getMenu().findItem(R.id.action_magcali).setTitle(R.string.Finish);
+                bMagCali = true;
+            } else {
+                mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x01, (byte) 0x00, (byte) 0x00});
+                mNavView.getMenu().findItem(R.id.action_magcali).setTitle(R.string.MagCali);
+                bMagCali = false;
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x00, (byte) 0x00, (byte) 0x00});
+                    }
+                }, 100);
+            }
+        } else if (itemId == R.id.action_d0) {
+            SetPortMode(0);
+        } else if (itemId == R.id.action_d1) {
+            SetPortMode(1);
+        } else if (itemId == R.id.action_d2) {
+            SetPortMode(2);
+        } else if (itemId == R.id.action_d3) {
+            SetPortMode(3);
+        } else if (itemId == R.id.action_rate) {
+            Rate();
+        } else if (itemId == R.id.action_resume) {
+            mService.writeByes(mCurrentDevice, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x00, (byte) 0x01, (byte) 0x00});
+        } else if (itemId == R.id.action_rename) {
+            final EditText editText = new EditText(DeviceControlActivity.this);
+            AlertDialog.Builder inputDialog =
+                    new AlertDialog.Builder(DeviceControlActivity.this);
+            inputDialog.setTitle(R.string.EnterNewName).setView(editText);
+            inputDialog.setPositiveButton(R.string.OK,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            String value= editText.getText().toString();
+                            if (value.length()>10) value = value.substring(0,9);
+                            if (value != null && !value.equals("")) {
+                                String name = "WIT-" + value + "\r\n";
+                                Log.e("------", "WT====" + name);
+                                mService.writeByes(mCurrentDevice, name.getBytes());
+                                Toast.makeText(DeviceControlActivity.this, R.string.Reset, Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(DeviceControlActivity.this, R.string.EnterName, Toast.LENGTH_SHORT).show();
+                            }
                         }
+                    });
+            inputDialog.setNegativeButton(R.string.Cancel,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(DeviceControlActivity.this,
+                                    R.string.Cancel,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }).show();
+        } else if (itemId == R.id.action_connect) {
+            if (mService.isAnyConnected()) {
+                // disconnect
+                if (mService != null) {
+                    mService.disconnect(mCurrentDevice, true);
+                }
+            } else {
+                // connect
+                Set<String> usedDevices = getUsedDevices();
+                if (mService != null) {
+                    if (!mService.connectAll(usedDevices)) {
+                        Toast.makeText(DeviceControlActivity.this, getString(R.string.connect_failed), Toast.LENGTH_SHORT).show();
                     }
                 }
-                break;
-            case R2.id.action_connect_other:
-                if (mService != null)
-                    mService.disconnectAll(true);
-                Intent serverIntent = new Intent(DeviceControlActivity.this, DeviceScanActivity.class);
-                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
-                break;
+            }
+        } else if (itemId == R.id.action_connect_other) {
+            if (mService != null)
+                mService.disconnectAll(true);
+            Intent serverIntent = new Intent(DeviceControlActivity.this, DeviceScanActivity.class);
+            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
         }
 
         draw.closeDrawers();

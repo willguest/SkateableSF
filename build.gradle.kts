@@ -3,18 +3,6 @@ plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
-    alias(libs.plugins.androidLibrary) apply true
+    alias(libs.plugins.androidLibrary) apply false
     alias(libs.plugins.compose.compiler) apply false
-}
-
-android {
-    namespace = "com.example.skateable_sf"
-    compileSdk = 34
-}
-
-buildscript {
-
-    dependencies {
-        classpath(libs.butterknife.gradle.plugin)
-    }
 }

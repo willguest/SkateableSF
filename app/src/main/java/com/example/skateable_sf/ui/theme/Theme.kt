@@ -1,5 +1,5 @@
 package com.example.skateable_sf.ui.theme
-/*
+
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -68,4 +68,3 @@ fun SkateableSFTheme(
         content = content
     )
 }
-*/

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.skateable_sf"
+    namespace = "com.example.skateable_sf.WT901BLE"
     compileSdk = 34
 
     defaultConfig {
@@ -83,12 +83,13 @@ dependencies {
     implementation(libs.design)
     implementation(libs.support.fragment)
 
-    implementation(libs.butterknife)
     implementation(libs.androidx.drawerlayout)
-    kapt(libs.butterknife.compiler)
+    implementation(libs.androidx.appcompat)
 
     implementation(libs.guava)
     implementation(libs.androidx.runtime)
+    implementation(libs.androidx.foundation.android)
+    implementation(libs.androidx.material3.android)
     testImplementation(libs.junit)
     testImplementation(libs.testng)
     androidTestImplementation(libs.androidx.junit)
@@ -97,12 +98,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.testng)
     androidTestImplementation(libs.junit)
-
-    annotationProcessor(libs.butterknife.compiler)
 }
 
-kapt {
-    generateStubs = true
-}
-
-apply(plugin = "com.jakewharton.butterknife")

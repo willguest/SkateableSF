@@ -6,6 +6,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.ViewPager;
+
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -13,14 +15,15 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.skateable_sf.R2;
-
+import com.example.skateable_sf.WT901BLE.R;
+import com.example.skateable_sf.WT901BLE.databinding.ActAngleBinding;
 
 /**
  * Created by 葛文博 on 2017/10/25.
  */
 public class AngleActivity extends FragmentActivity implements ViewPager.OnPageChangeListener {
 
+    private ActAngleBinding binding;
     private List<Fragment> list = new ArrayList<>();
 
     private ViewPager mViewPager;
@@ -29,13 +32,17 @@ public class AngleActivity extends FragmentActivity implements ViewPager.OnPageC
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActAngleBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
+        mViewPager = binding.mViewPager;
+
         Window window = getWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
-        setContentView(R2.layout.act_angle);
-        mViewPager = (ViewPager) findViewById(R2.id.mViewPager);
         init();
     }
 

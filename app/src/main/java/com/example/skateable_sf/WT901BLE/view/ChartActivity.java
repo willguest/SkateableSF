@@ -19,7 +19,7 @@ import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet;
-import com.example.skateable_sf.R;
+import com.example.skateable_sf.WT901BLE.R;
 
 import java.io.BufferedReader;
 import java.io.File;

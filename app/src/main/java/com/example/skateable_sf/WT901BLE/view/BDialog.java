@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import com.example.skateable_sf.R;
+import com.example.skateable_sf.WT901BLE.R;
 
 
 public class BDialog extends DialogFragment {

@@ -49,7 +49,9 @@ import androidx.core.app.RemoteInput;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.example.skateable_sf.WT901BLE.R;
 import com.example.skateable_sf.WT901BLE.data.Data;
 
 import java.io.File;
@@ -61,16 +63,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import com.example.skateable_sf.R2;
 import com.example.skateable_sf.WT901BLE.data.Statistics;
 
 public class BluetoothLeService extends Service {
+
     private final static String TAG = BluetoothLeService.class.getSimpleName();
 
     private static final String KEY_NOTE = "key_note";
@@ -236,16 +239,16 @@ public class BluetoothLeService extends Service {
         }
 
         if (mRecording)
-            passNotification(String.format(getString(R2.string.recording_status), connected, mConnected.size()), NOTIFICATION_ID_STATUS, true);
+            passNotification(String.format(getString(R.string.recording_status), connected, mConnected.size()), NOTIFICATION_ID_STATUS, true);
         else
-            passNotification(String.format(getString(R2.string.not_recording_status), connected, mConnected.size()), NOTIFICATION_ID_STATUS, false);
+            passNotification(String.format(getString(R.string.not_recording_status), connected, mConnected.size()), NOTIFICATION_ID_STATUS, false);
     }
 
     private void updateIntegrityNotification(int devicesFailed) {
         if (devicesFailed == 0) {
             removeNotification(NOTIFICATION_ID_INTEGRITY);
         } else {
-            passNotification(String.format(getString(R2.string.integrity_check_message), devicesFailed), NOTIFICATION_ID_INTEGRITY, false);
+            passNotification(String.format(getString(R.string.integrity_check_message), devicesFailed), NOTIFICATION_ID_INTEGRITY, false);
         }
     }
 
@@ -448,7 +451,16 @@ public class BluetoothLeService extends Service {
         }
     }
 
-    @SuppressLint("ForegroundServiceType")
+    public Boolean isPermissionGranted(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED;
+        } else {
+            return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        }
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         isRunning = true;
@@ -456,9 +468,29 @@ public class BluetoothLeService extends Service {
         // TODO abort when failed
         initialize();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R2.string.sensor_status_channel);
-            String description = getString(R2.string.sensor_status_channel);
+        if (!isPermissionGranted(this)){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Set<String> permissions = new HashSet<>();
+                permissions.add(Manifest.permission.BLUETOOTH);
+                permissions.add(Manifest.permission.BLUETOOTH_ADMIN);
+                permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    permissions.add(Manifest.permission.BLUETOOTH_CONNECT);
+                    permissions.add(Manifest.permission.BLUETOOTH_SCAN);
+                }
+
+                Intent permissionIntent = new Intent(this, PermissionRequestActivity.class);
+                permissionIntent.putExtra("permissions", permissions.toArray(new String[0]));
+                permissionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(permissionIntent);
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            CharSequence name = getString(R.string.sensor_status_channel);
+            String description = getString(R.string.sensor_status_channel);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
@@ -468,7 +500,9 @@ public class BluetoothLeService extends Service {
             notificationManager.createNotificationChannel(channel);
         }
 
-        startForeground(NOTIFICATION_ID_STATUS, getNotification(getString(R2.string.not_connected), false));
+        Log.w(TAG, "ipg" + isPermissionGranted(this).toString());
+
+        startForeground(NOTIFICATION_ID_STATUS, getNotification(getString(R.string.not_connected), false));
 
         return START_NOT_STICKY;
     }
@@ -495,14 +529,14 @@ public class BluetoothLeService extends Service {
                 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder b = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle(getString(R2.string.app_name))
+                .setContentTitle(getString(R.string.app_name))
                 .setContentText(msg)
-                .setSmallIcon(R2.drawable.ic_notification)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentIntent(pendingIntent);
 
         if (replyAction) {
             RemoteInput remoteInput = new RemoteInput.Builder(KEY_NOTE)
-                    .setLabel(getResources().getString(R2.string.mark))
+                    .setLabel(getResources().getString(R.string.mark))
                     .build();
             Intent intent = new Intent(Intent.ACTION_INSERT);
             PendingIntent replyPendingIntent =
@@ -512,8 +546,8 @@ public class BluetoothLeService extends Service {
                             PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             NotificationCompat.Action action =
-                    new NotificationCompat.Action.Builder(R2.drawable.ic_check,
-                            getString(R2.string.mark), replyPendingIntent)
+                    new NotificationCompat.Action.Builder(R.drawable.ic_check,
+                            getString(R.string.mark), replyPendingIntent)
                             .addRemoteInput(remoteInput)
                             .build();
 

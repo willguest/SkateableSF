@@ -23,7 +23,6 @@ dependencyResolutionManagement {
     }
 }
 
-
 rootProject.name = "Skateable-SF"
 include(":app")
  

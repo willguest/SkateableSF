@@ -1,7 +1,6 @@
 [versions]
 agp = "8.5.2"
-butterknife = "8.4.0"
-butterknifeGradlePlugin = "10.2.3"
+appcompat = "1.0.0"
 design = "28.0.0"
 guava = "27.0.1-android"
 kotlin = "2.0.21"
@@ -25,16 +24,16 @@ supportFragment = "28.0.0"
 testng = "6.9.6"
 junit = "3.8.1"
 drawerlayout = "1.2.0"
+foundationAndroid = "1.7.5"
+material3Android = "1.3.1"
 
 [libraries]
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-butterknife = { module = "com.jakewharton:butterknife", version.ref = "butterknife" }
-butterknife-compiler = { group = "com.jakewharton", name = "butterknife-compiler", version.ref = "butterknife" }
-butterknife-gradle-plugin = { module = "com.jakewharton:butterknife-gradle-plugin", version.ref = "butterknifeGradlePlugin" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 ic4j-agent = { group = "org.ic4j", name = "ic4j-agent", version.ref = "ic4j" }
 ic4j-candid = { group = "org.ic4j", name = "ic4j-candid", version.ref = "ic4j" }
@@ -56,6 +55,8 @@ support-fragment = { module = "com.android.support:support-fragment", version.re
 testng = { module = "org.testng:testng", version.ref = "testng" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-drawerlayout = { group = "androidx.drawerlayout", name = "drawerlayout", version.ref = "drawerlayout" }
+androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

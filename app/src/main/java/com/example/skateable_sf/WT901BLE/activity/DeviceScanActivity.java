@@ -48,7 +48,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,9 +72,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.example.skateable_sf.R2;
+import com.example.skateable_sf.WT901BLE.R;
+
+import com.example.skateable_sf.WT901BLE.databinding.ActDeviceBinding;
 
 public class DeviceScanActivity extends AppCompatActivity {
+
     private LeDeviceListAdapter mLeDeviceListAdapter;
     private BluetoothAdapter mBluetoothAdapter;
     private boolean mScanning;
@@ -96,14 +98,19 @@ public class DeviceScanActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R2.layout.act_device);
+        com.example.skateable_sf.WT901BLE.databinding.ActDeviceBinding binding = ActDeviceBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R2.id.my_toolbar);
-        setSupportActionBar(myToolbar);
+        Toolbar myToolbar = binding.myToolbar;
+        //Toolbar myToolbar = (Toolbar) findViewById(R2.id.my_toolbar);
+        //setSupportActionBar(myToolbar);
 
-        setTitle(R2.string.pick_use);
+        setTitle(R.string.pick_use);
 
-        mListView = findViewById(R2.id.listView);
+        mListView = binding.listView;
+        //mListView = findViewById(R2.id.listView);
+
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -119,7 +126,7 @@ public class DeviceScanActivity extends AppCompatActivity {
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, R2.string.ble_not_supported, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
         }
 
@@ -130,7 +137,7 @@ public class DeviceScanActivity extends AppCompatActivity {
 
         // Checks if Bluetooth is supported on the device.
         if (mBluetoothAdapter == null) {
-            Toast.makeText(this, R2.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -142,29 +149,29 @@ public class DeviceScanActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R2.menu.act_scan, menu);
+        inflater.inflate(R.menu.act_scan, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R2.id.okay:
-                final Intent intent = new Intent(this, DeviceControlActivity.class);
-                setResult(Activity.RESULT_OK, intent);
-                finish();
-                return true;
-            case R2.id.refresh:
-                if (mScanning) {
-                    scanLeDevice(false);
-                } else {
-                    mLeDeviceListAdapter.clear();
-                    mLeDeviceListAdapter.notifyDataSetChanged();
-                    scanLeDevice(true);
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == R.id.okay) {
+            final Intent intent = new Intent(this, DeviceControlActivity.class);
+            setResult(Activity.RESULT_OK, intent);
+            finish();
+            return true;
+        } else if (itemId == R.id.refresh) {
+            if (mScanning) {
+                scanLeDevice(false);
+            } else {
+                mLeDeviceListAdapter.clear();
+                mLeDeviceListAdapter.notifyDataSetChanged();
+                scanLeDevice(true);
+            }
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -175,11 +182,9 @@ public class DeviceScanActivity extends AppCompatActivity {
         super.onResume();
 
         //蓝牙连接
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Android M Permission check
-            if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_FINE_LOCATION);
-            }
+        // Android M Permission check
+        if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_FINE_LOCATION);
         }
 
         Log.e("--", "onResume");
@@ -332,11 +337,11 @@ public class DeviceScanActivity extends AppCompatActivity {
             ViewHolder viewHolder;
             // General ListView optimization code.
             if (view == null) {
-                view = mInflator.inflate(R2.layout.listitem_device, null);
+                view = mInflator.inflate(R.layout.listitem_device, null);
                 viewHolder = new ViewHolder();
-                viewHolder.deviceAddress = (TextView) view.findViewById(R2.id.device_address);
-                viewHolder.deviceName = (TextView) view.findViewById(R2.id.device_name);
-                viewHolder.use = view.findViewById(R2.id.use);
+                viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
+                viewHolder.deviceName = (TextView) view.findViewById(R.id.device_name);
+                viewHolder.use = view.findViewById(R.id.use);
                 view.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) view.getTag();
@@ -344,10 +349,10 @@ public class DeviceScanActivity extends AppCompatActivity {
 
             BluetoothDevice device = mLeDevices.get(i);
             final String deviceName = mRecords.get(i).getDeviceName();
-            if (deviceName != null && deviceName.trim().length() > 0)
+            if (deviceName != null && !deviceName.trim().isEmpty())
                 viewHolder.deviceName.setText(deviceName.trim() + "  RSSI:" + mRSSIs.get(i).toString());
             else
-                viewHolder.deviceName.setText(getString(R2.string.unknown_device) + "  RSSI:" + mRSSIs.get(i).toString());
+                viewHolder.deviceName.setText(getString(R.string.unknown_device) + "  RSSI:" + mRSSIs.get(i).toString());
             viewHolder.deviceAddress.setText(device.getAddress());
             viewHolder.use.setChecked(mUse.get(i));
 

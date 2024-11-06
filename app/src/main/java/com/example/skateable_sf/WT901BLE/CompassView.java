@@ -11,7 +11,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
 
-import com.example.skateable_sf.R;
+import com.example.skateable_sf.WT901BLE.R;
 
 
 public class CompassView extends View {
