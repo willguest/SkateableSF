@@ -33,7 +33,7 @@ public class ChainActivity : Activity() {
 
         cService = CanisterService(applicationContext.filesDir.path)
 
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_chain)
 
         val challengeKeyEditText = findViewById<EditText>(R.id.challengeKey)
         val captchaImageView = findViewById<ImageView>(R.id.captchaImage)

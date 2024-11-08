@@ -44,6 +44,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.RemoteInput;
 import android.util.Log;
@@ -59,7 +61,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -75,13 +76,10 @@ import com.example.skateable_sf.WT901BLE.data.Statistics;
 public class BluetoothLeService extends Service {
 
     private final static String TAG = BluetoothLeService.class.getSimpleName();
-
     private static final String KEY_NOTE = "key_note";
-
     public static final String CHANNEL_ID = "SensorServiceChannel";
     private static final int NOTIFICATION_ID_STATUS = 1;
     private static final int NOTIFICATION_ID_INTEGRITY = 2;
-
     private static final CharSequence CHARACTERISTIC_WRITE = "ffe9";
     private static final CharSequence CHARACTERISTIC_READ = "ffe4";
     private static final String CHARACTERISTIC_READ_DESCRIPTOR = "00002902-0000-1000-8000-00805f9b34fb";
@@ -92,14 +90,14 @@ public class BluetoothLeService extends Service {
     private BluetoothAdapter mBluetoothAdapter;
 
     // attributes for every device
-    private Map<String, BluetoothGatt> mBluetoothGatt = new HashMap<>();
-    private Map<String, BluetoothGattCharacteristic> mNotifyCharacteristic = new HashMap<>();
-    private Map<String, Boolean> mConnected = new HashMap<>();
-    private Map<String, Data> mData = new HashMap<>();
-    private Map<String, MyFile> mFile = new HashMap<>();
-    private Map<String, Statistics> mStats = new HashMap<>();
+    private final Map<String, BluetoothGatt> mBluetoothGatt = new HashMap<>();
+    private final Map<String, BluetoothGattCharacteristic> mNotifyCharacteristic = new HashMap<>();
+    private final Map<String, Boolean> mConnected = new HashMap<>();
+    private final Map<String, Data> mData = new HashMap<>();
+    private final Map<String, MyFile> mFile = new HashMap<>();
+    private final Map<String, Statistics> mStats = new HashMap<>();
 
-    private boolean mManuallyDisconnected;  // to catch a bug where the device somehow gets reconnected
+    private boolean mManuallyDisconnected;  // to catch a bug where the device gets reconnected
     private boolean mRecording;
     private boolean mRecordingBaseline;
 
@@ -120,12 +118,14 @@ public class BluetoothLeService extends Service {
     }
 
     public boolean setRate(String device, int iOutputRate) {
-        return writeByes(device, new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x03, (byte) iOutputRate, (byte) 0x00});
+        return writeByes(device,
+                new byte[]{(byte) 0xff, (byte) 0xaa, (byte) 0x03, (byte) iOutputRate, (byte) 0x00});
     }
 
     public void addMark(String device, String note) {
-        if (mRecording && mFile.containsKey(device) && !mFile.get(device).isClosed())
-            mFile.get(device).mark(note);
+        if (mRecording && mFile.containsKey(device) &&
+                Objects.requireNonNull(mFile.get(device)).isOpen())
+            Objects.requireNonNull(mFile.get(device)).mark(note);
     }
 
     public void addMarkAll(String note) {
@@ -133,7 +133,7 @@ public class BluetoothLeService extends Service {
             return;
 
         for (MyFile file : mFile.values()) {
-            if (!file.isClosed())
+            if (file.isOpen())
                 file.mark(note);
         }
     }
@@ -142,7 +142,6 @@ public class BluetoothLeService extends Service {
         return mFile.containsKey(device) ? Objects.requireNonNull(mFile.get(device)).path : null;
     }
 
-
     public interface UICallback {
         void handleBLEData(String deviceAddress, Data data);
 
@@ -150,7 +149,6 @@ public class BluetoothLeService extends Service {
 
         void onDisconnected(String deviceAddress);
     }
-
 
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
@@ -166,7 +164,7 @@ public class BluetoothLeService extends Service {
                     if (!mStats.containsKey(device))
                         mStats.put(device, new Statistics());
                     else
-                        mStats.get(device).resume();
+                        Objects.requireNonNull(mStats.get(device)).resume();
 
                     if (mUICallback != null)
                         mUICallback.onConnected(device);
@@ -186,7 +184,7 @@ public class BluetoothLeService extends Service {
                 Log.i(TAG, "Disconnected from GATT server.");
                 mConnected.put(device, false);
                 mNotifyCharacteristic.remove(device);
-                mStats.get(device).pause();
+                Objects.requireNonNull(mStats.get(device)).pause();
 
                 if (mUICallback != null)
                     mUICallback.onDisconnected(device);
@@ -196,17 +194,20 @@ public class BluetoothLeService extends Service {
         }
 
         @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+        public void onServicesDiscovered(BluetoothGatt gatt,
+                                         int status) {
             String device = gatt.getDevice().getAddress();
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 BluetoothLeService.this.getWorkableGattServices(device, getSupportedGattServices(device));
             } else {
-                Log.w(TAG, "onServicesDiscovered received: " + status);
+                Log.w(TAG, "onServicesDiscovered: " + status);
             }
         }
 
         @Override
-        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        public void onCharacteristicRead(BluetoothGatt gatt,
+                                         BluetoothGattCharacteristic characteristic,
+                                         int status) {
             byte[] data = characteristic.getValue();
             String device = gatt.getDevice().getAddress();
             if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -217,7 +218,8 @@ public class BluetoothLeService extends Service {
         }
 
         @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        public void onCharacteristicChanged(BluetoothGatt gatt,
+                                            BluetoothGattCharacteristic characteristic) {
             byte[] data = characteristic.getValue();
             String device = gatt.getDevice().getAddress();
             handleBLEData(device, data);
@@ -226,7 +228,10 @@ public class BluetoothLeService extends Service {
         }
 
         @Override
-        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        public void onCharacteristicWrite(BluetoothGatt gatt,
+                                          BluetoothGattCharacteristic characteristic,
+                                          int status) {
+            Log.d(TAG, "onCharacteristicWrite");
         }
     };
 
@@ -254,7 +259,7 @@ public class BluetoothLeService extends Service {
 
     @SuppressLint("DefaultLocale")
     private void handleBLEData(String device, byte[] packBuffer) {
-        mStats.get(device).logSampleReceived();
+        Objects.requireNonNull(mStats.get(device)).logSampleReceived();
 
         // do this check every 30 minutes
         if (System.currentTimeMillis() - lastIntegrityCheckTime > 30 * 60 * 1000L) {
@@ -262,34 +267,36 @@ public class BluetoothLeService extends Service {
             lastIntegrityCheckTime = System.currentTimeMillis();
         }
 
-        StringBuilder sdata = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (byte aPackBuffer : packBuffer) {
-            sdata.append(String.format("%02x", (0xff & aPackBuffer)));
+            sb.append(String.format("%02x", (0xff & aPackBuffer)));
         }
 
         String formatted;
         if (packBuffer.length == 20) {
-            formatted = mData.get(device).update(packBuffer);
+            formatted = Objects.requireNonNull(mData.get(device)).update(packBuffer);
             if (mRecording && formatted != null) {
                 if (!mFile.containsKey(device))
                     createNewFile(device);
                 try {
-                    mFile.get(device).write(formatted);
+                    Objects.requireNonNull(mFile.get(device)).write(formatted);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG,e.toString());
                 }
             }
         }
-
         updateTime(device);
     }
 
     private void checkIntegrity() {
         Map<String, Double> samplesPerSecond = new HashMap<>();
         double maxSamplesPerSecond = -1;
+        double sps;
+
         for (Map.Entry<String, Statistics> entry : mStats.entrySet()) {
             samplesPerSecond.put(entry.getKey(), entry.getValue().getSamplesPerSecond());
-            maxSamplesPerSecond = Math.max(maxSamplesPerSecond, samplesPerSecond.get(entry.getKey()));
+            sps = samplesPerSecond.get(entry.getKey());
+            maxSamplesPerSecond = Math.max(maxSamplesPerSecond, sps);
         }
 
         int devicesFailed = 0;
@@ -298,13 +305,11 @@ public class BluetoothLeService extends Service {
                 devicesFailed++;
             }
         }
-
         updateIntegrityNotification(devicesFailed);
     }
 
-
     public void updateTime(String device) {
-        Calendar t = mData.get(device).getTime();
+        Calendar t = Objects.requireNonNull(mData.get(device)).getTime();
         if (cSetTimeCnt < 4) {
             switch (cSetTimeCnt) {
                 case 0:
@@ -384,7 +389,9 @@ public class BluetoothLeService extends Service {
 
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_INSERT);
-        registerReceiver(mNoteReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(mNoteReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED);
+        }
 
         return true;
     }
@@ -405,7 +412,7 @@ public class BluetoothLeService extends Service {
 
         if (mBluetoothGatt.get(address) != null) {
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
-            return mBluetoothGatt.get(address).connect();
+            return Objects.requireNonNull(mBluetoothGatt.get(address)).connect();
         } else {
             final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
             if (device == null) {
@@ -428,7 +435,7 @@ public class BluetoothLeService extends Service {
     }
 
     public void disconnect(String device, boolean releaseResources) {
-        if (!mConnected.get(device))
+        if (Boolean.FALSE.equals(mConnected.get(device)))
             return;
         if (mBluetoothAdapter == null || mBluetoothGatt.get(device) == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
@@ -437,10 +444,10 @@ public class BluetoothLeService extends Service {
         mManuallyDisconnected = true;
         if (releaseResources && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
             mGattCallback.onConnectionStateChange(mBluetoothGatt.get(device), 0, BluetoothProfile.STATE_DISCONNECTED);
-            mBluetoothGatt.get(device).close();
+            Objects.requireNonNull(mBluetoothGatt.get(device)).close();
             mBluetoothGatt.remove(device);
         } else {
-            mBluetoothGatt.get(device).disconnect();
+            Objects.requireNonNull(mBluetoothGatt.get(device)).disconnect();
         }
         mConnected.put(device, false);
     }
@@ -465,46 +472,46 @@ public class BluetoothLeService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         isRunning = true;
 
-        // TODO abort when failed
-        initialize();
+        // TODO: abort when failed
+        boolean initResult = initialize();
 
         if (!isPermissionGranted(this)){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Set<String> permissions = new HashSet<>();
-                permissions.add(Manifest.permission.BLUETOOTH);
-                permissions.add(Manifest.permission.BLUETOOTH_ADMIN);
-                permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            Set<String> permissions = addPermissions();
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    permissions.add(Manifest.permission.BLUETOOTH_CONNECT);
-                    permissions.add(Manifest.permission.BLUETOOTH_SCAN);
-                }
-
-                Intent permissionIntent = new Intent(this, PermissionRequestActivity.class);
-                permissionIntent.putExtra("permissions", permissions.toArray(new String[0]));
-                permissionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(permissionIntent);
-            }
+            Intent permissionIntent = new Intent(this, PermissionRequestActivity.class);
+            permissionIntent.putExtra("permissions", permissions.toArray(new String[0]));
+            permissionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(permissionIntent);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            CharSequence name = getString(R.string.sensor_status_channel);
-            String description = getString(R.string.sensor_status_channel);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+        CharSequence name = getString(R.string.sensor_status_channel);
+        String description = getString(R.string.sensor_status_channel);
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+        channel.setDescription(description);
+        // Register the channel with the system; you can't change the importance
+        // or other notification behaviors after this
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
 
-        Log.w(TAG, "ipg" + isPermissionGranted(this).toString());
-
+        Log.w(TAG, "has permissions: " + isPermissionGranted(this).toString());
         startForeground(NOTIFICATION_ID_STATUS, getNotification(getString(R.string.not_connected), false));
-
         return START_NOT_STICKY;
+    }
+
+    @NonNull
+    private static Set<String> addPermissions() {
+        Set<String> permissions = new HashSet<>();
+        permissions.add(Manifest.permission.BLUETOOTH);
+        permissions.add(Manifest.permission.BLUETOOTH_ADMIN);
+        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissions.add(Manifest.permission.BLUETOOTH_CONNECT);
+            permissions.add(Manifest.permission.BLUETOOTH_SCAN);
+        }
+        return permissions;
     }
 
     public class NoteReceiver extends BroadcastReceiver {
@@ -515,13 +522,12 @@ public class BluetoothLeService extends Service {
                 return;
             }
 
-            addMarkAll(remoteInput.getCharSequence(KEY_NOTE).toString());
-
+            addMarkAll(Objects.requireNonNull(remoteInput.getCharSequence(KEY_NOTE)).toString());
             updateStatusNotification();
         }
     }
 
-    private NoteReceiver mNoteReceiver = new NoteReceiver();
+    private final NoteReceiver mNoteReceiver = new NoteReceiver();
 
     private Notification getNotification(String msg, boolean replyAction) {
         Intent notificationIntent = new Intent(this, DeviceControlActivity.class);
@@ -579,7 +585,7 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not authorised");
             return;
         }
-        mBluetoothGatt.get(device).readCharacteristic(characteristic);
+        Objects.requireNonNull(mBluetoothGatt.get(device)).readCharacteristic(characteristic);
     }
 
     public void setCharacteristicNotification(String device, BluetoothGattCharacteristic characteristic, boolean enabled) {
@@ -591,7 +597,8 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not authorised");
             return;
         }
-        mBluetoothGatt.get(device).setCharacteristicNotification(characteristic, enabled);
+        Objects.requireNonNull(mBluetoothGatt.get(device))
+                .setCharacteristicNotification(characteristic, enabled);
     }
 
     public void writeCharacteristic(String device, BluetoothGattCharacteristic characteristic) {
@@ -599,23 +606,27 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
             Log.w(TAG, "BluetoothAdapter not authorised");
             return;
         }
-        mBluetoothGatt.get(device).writeCharacteristic(characteristic);
+        Objects.requireNonNull(mBluetoothGatt.get(device))
+                .writeCharacteristic(characteristic);
     }
 
     public List<BluetoothGattService> getSupportedGattServices(String device) {
         if (mBluetoothGatt.get(device) == null) return null;
-        return mBluetoothGatt.get(device).getServices();
+        return Objects.requireNonNull(mBluetoothGatt.get(device)).getServices();
     }
 
     public boolean writeByes(String device, byte[] bytes) {
         if (mNotifyCharacteristic.get(device) != null && mBluetoothGatt.get(device) != null &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-            mNotifyCharacteristic.get(device).setValue(bytes);
-            return mBluetoothGatt.get(device).writeCharacteristic(mNotifyCharacteristic.get(device));
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+            Objects.requireNonNull(mNotifyCharacteristic.get(device)).setValue(bytes);
+            return Objects.requireNonNull(mBluetoothGatt.get(device))
+                    .writeCharacteristic(mNotifyCharacteristic.get(device));
         } else {
             return false;
         }
@@ -624,8 +635,9 @@ public class BluetoothLeService extends Service {
     public boolean writeString(String device, String s) {
         if (mNotifyCharacteristic.get(device) != null && mBluetoothGatt.get(device) != null &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-            mNotifyCharacteristic.get(device).setValue(s);
-            return mBluetoothGatt.get(device).writeCharacteristic(mNotifyCharacteristic.get(device));
+            Objects.requireNonNull(mNotifyCharacteristic.get(device)).setValue(s);
+            return Objects.requireNonNull(mBluetoothGatt.get(device))
+                    .writeCharacteristic(mNotifyCharacteristic.get(device));
         } else {
             return false;
         }
@@ -662,16 +674,16 @@ public class BluetoothLeService extends Service {
                     setCharacteristicNotification(device, gattCharacteristic, true);
                     BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID.fromString(CHARACTERISTIC_READ_DESCRIPTOR));
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    mBluetoothGatt.get(device).writeDescriptor(descriptor);
+                    Objects.requireNonNull(mBluetoothGatt.get(device)).writeDescriptor(descriptor);
                 }
             }
         }
     }
 
-    class MyFile {
+    static class MyFile {
         FileOutputStream fout;
         File path;
-        boolean closed = false;
+        boolean open = true;
 
         public MyFile(File file) throws FileNotFoundException {
             this.path = file;
@@ -686,26 +698,26 @@ public class BluetoothLeService extends Service {
         public void close() throws IOException {
             fout.close();
             fout.flush();
-            closed = true;
+            open = false;
         }
 
         public void mark(String note) {
             try {
                 fout.write(("mark " + note + "\n").getBytes());
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG,e.toString());
             }
         }
 
-        public boolean isClosed() {
-            return closed;
+        public boolean isOpen() {
+            return open;
         }
 
         public void startBaseline() {
             try {
                 fout.write(("baseline start\n").getBytes());
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, e.toString());
             }
         }
 
@@ -713,14 +725,15 @@ public class BluetoothLeService extends Service {
             try {
                 fout.write(("baseline end\n").getBytes());
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, e.toString());
             }
         }
     }
 
-    private String generateFname(String device) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd__HH_mm_ss");
-        return "Recording__" + dateFormat.format(new Date()) + "__" + device.replace(":", "-") + ".txt";
+    private String generateFilename(String device) {
+        DateFormat dateFormat = DateFormat.getDateTimeInstance();
+        return "Recording__" + dateFormat.format(
+                new Date()) + "__" + device.replace(":", "-") + ".txt";
     }
 
     public void toggleRecording() {
@@ -737,7 +750,7 @@ public class BluetoothLeService extends Service {
                 try {
                     file.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.toString());
                 }
             }
         }
@@ -756,7 +769,7 @@ public class BluetoothLeService extends Service {
             mRecordingBaseline = true;
 
             for (MyFile file : mFile.values()) {
-                if (!file.isClosed())
+                if (file.isOpen())
                     file.startBaseline();
             }
 
@@ -764,7 +777,7 @@ public class BluetoothLeService extends Service {
             mRecordingBaseline = false;
 
             for (MyFile file : mFile.values()) {
-                if (!file.isClosed())
+                if (file.isOpen())
                     file.endBaseline();
             }
         }
@@ -772,9 +785,10 @@ public class BluetoothLeService extends Service {
 
     public void createNewFile(String device) {
         try {
-            mFile.put(device, new MyFile(new File(getExternalFilesDir(null), generateFname(device))));
+            mFile.put(device, new MyFile(
+                    new File(getExternalFilesDir(null), generateFilename(device))));
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         }
     }
 
@@ -796,7 +810,7 @@ public class BluetoothLeService extends Service {
     }
 
     public boolean isConnected(String device) {
-        return mConnected.containsKey(device) && mConnected.get(device);
+        return mConnected.containsKey(device) && Boolean.TRUE.equals(mConnected.get(device));
     }
 
     public void setUICallback(UICallback callback) {

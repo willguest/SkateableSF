@@ -54,7 +54,6 @@ import com.github.mikephil.charting.charts.LineChart;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -89,33 +88,33 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     private LineChart lineChart;
     private LineChartManager lineChartManager;
     //角速度CopeBLEData
-    private List<Float> wList = new ArrayList<>(); //数据集合
-    private List<String> wNames = new ArrayList<>(); //折线名字集合
-    private List<Integer> wColour = new ArrayList<>();//折线颜色集合
+    private final List<Float> wList = new ArrayList<>(); //数据集合
+    private final List<String> wNames = new ArrayList<>(); //折线名字集合
+    private final List<Integer> wColour = new ArrayList<>();//折线颜色集合
     //加速度
-    private List<Float> aList = new ArrayList<>(); //数据集合
-    private List<String> aNames = new ArrayList<>(); //折线名字集合
-    private List<Integer> aColour = new ArrayList<>();//折线颜色集合
+    private final List<Float> aList = new ArrayList<>(); //数据集合
+    private final List<String> aNames = new ArrayList<>(); //折线名字集合
+    private final List<Integer> aColour = new ArrayList<>();//折线颜色集合
     //角度
-    private List<Float> angleList = new ArrayList<>(); //数据集合
-    private List<String> angleNames = new ArrayList<>(); //折线名字集合
-    private List<Integer> angleColour = new ArrayList<>();//折线颜色集合
+    //private List<Float> angleList = new ArrayList<>(); //数据集合
+    private final List<String> angleNames = new ArrayList<>(); //折线名字集合
+    private final List<Integer> angleColour = new ArrayList<>();//折线颜色集合
     //磁场
-    private List<Float> hList = new ArrayList<>(); //数据集合
-    private List<String> hNames = new ArrayList<>(); //折线名字集合
-    private List<Integer> hColour = new ArrayList<>();//折线颜色集合
+    private final List<Float> hList = new ArrayList<>(); //数据集合
+    private final List<String> hNames = new ArrayList<>(); //折线名字集合
+    private final List<Integer> hColour = new ArrayList<>();//折线颜色集合
     //气压
-    private List<Float> heightList = new ArrayList<>(); //数据集合
-    private List<String> heightNames = new ArrayList<>(); //折线名字集合
-    private List<Integer> heightColour = new ArrayList<>();//折线颜色集合
+    private final List<Float> heightList = new ArrayList<>(); //数据集合
+    private final List<String> heightNames = new ArrayList<>(); //折线名字集合
+    private final List<Integer> heightColour = new ArrayList<>();//折线颜色集合
     //端口
-    private List<Float> dList = new ArrayList<>(); //数据集合
-    private List<String> dNames = new ArrayList<>(); //折线名字集合
-    private List<Integer> dColour = new ArrayList<>();//折线颜色集合
+    private final List<Float> dList = new ArrayList<>(); //数据集合
+    private final List<String> dNames = new ArrayList<>(); //折线名字集合
+    private final List<Integer> dColour = new ArrayList<>();//折线颜色集合
     //四元数
-    private List<Float> qList = new ArrayList<>(); //数据集合
-    private List<String> qNames = new ArrayList<>(); //折线名字集合
-    private List<Integer> qColour = new ArrayList<>();//折线颜色集合
+    private final List<Float> qList = new ArrayList<>(); //数据集合
+    private final List<String> qNames = new ArrayList<>(); //折线名字集合
+    private final List<Integer> qColour = new ArrayList<>();//折线颜色集合
 
     int DisplayIndex = 0;
 
@@ -123,7 +122,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
 
     private LinearLayout mLayout;
 
-    private List<Fragment> listFragment = new ArrayList<>();
+    private final List<Fragment> listFragment = new ArrayList<>();
 
     private boolean bMagCali = false;
     private boolean myAcli = false;
@@ -149,7 +148,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
 
             mService.setUICallback(mCallback);
 
-            Log.d(DeviceControlActivity.class.getCanonicalName(), "onServiceConnected");
+            Log.d(TAG, "onServiceConnected");
 
             refreshStatus();
         }
@@ -180,13 +179,20 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     }
 
     private void switchToTab(int id) {
-        View v = findViewById(id);
+        //View v = findViewById(id);
+        // TODO: changing references to use view binding, requires min API 29 (87% coverage)...
+        View v = binding.getRoot();
         if (id == R.id.btnAcc) {
             mViewPager.setVisibility(View.GONE);
             mLayout.setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R.id.tvTittleX)).setText("ax:");
-            ((TextView) findViewById(R.id.tvTittleY)).setText("ay:");
-            ((TextView) findViewById(R.id.tvTittleZ)).setText("az:");
+
+            binding.tvTittleX.setText("ax:");
+            binding.tvTittleY.setText("ay:");
+            binding.tvTittleZ.setText("az:");
+            //((TextView) findViewById(R.id.tvTittleX)).setText("ax:");
+            //((TextView) findViewById(R.id.tvTittleY)).setText("ay:");
+            //((TextView) findViewById(R.id.tvTittleZ)).setText("az:");
+
             tvZ.setVisibility(View.VISIBLE);
             ((TextView) findViewById(R.id.tvTittleAll)).setText("|acc|:");
             tvAll.setVisibility(View.VISIBLE);
@@ -340,7 +346,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                     SharedPreferences mySharedPreferences1 = getSharedPreferences("Output",Activity.MODE_PRIVATE);
                     SharedPreferences.Editor editor = mySharedPreferences1.edit();
                     editor.putInt("Rate", mOutputRate);
-                    editor.commit();
+                    editor.apply();
                     if (!mService.setRateAll(mOutputRate)) {
                         Toast.makeText(DeviceControlActivity.this, R.string.failed_set_rate, Toast.LENGTH_SHORT).show();
                     }
@@ -418,11 +424,8 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
         mViewPager = binding.mViewPager;
         mLayout = binding.mLayout;
 
-        //setContentView(R.layout.gatt_services_characteristics);
-
         configureNavigationDrawer();
         configureToolbar();
-
 
         if (!BluetoothLeService.isRunning) {
             Set<String> usedDevices = getUsedDevices();
@@ -431,6 +434,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                     Intent serverIntent = new Intent(DeviceControlActivity.this, DeviceScanActivity.class);
                     startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
                 } catch (Exception err) {
+                    Log.e(TAG, err.toString());
                 }
             } else {
                 mToConnectTo = usedDevices;
@@ -440,11 +444,13 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     }
 
     private Set<String> getUsedDevices() {
-        return getSharedPreferences("General", Activity.MODE_PRIVATE).getStringSet("Using-devices", new HashSet<String>());
+        return getSharedPreferences("General", Activity.MODE_PRIVATE)
+                .getStringSet("Using-devices", new HashSet<>());
     }
 
     private Set<Pair<String, String>> getUsedDeviceNames() {
-        Set<String> names = getSharedPreferences("General", Activity.MODE_PRIVATE).getStringSet("Using-devices-names", new HashSet<String>());
+        Set<String> names = getSharedPreferences("General", Activity.MODE_PRIVATE)
+                .getStringSet("Using-devices-names", new HashSet<>());
         Set<Pair<String, String>> formattedNames = new HashSet<>();
         for (String name : names) {
             String[] comps = name.split(" - ");
@@ -458,22 +464,23 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        switch (requestCode) {
-            case REQUEST_CONNECT_DEVICE: // When DeviceListActivity returns with a device to connect
-                if (intent != null) {
-                    mToConnectTo = getUsedDevices();
-                    if (resultCode == Activity.RESULT_OK && mService != null) {
-                        if (mService.connectAll(mToConnectTo)) {
-                            mToConnectTo = null;
-                        } else {
-                            Toast.makeText(DeviceControlActivity.this, getString(R.string.connect_failed), Toast.LENGTH_SHORT).show();
-                        }
+        // When DeviceListActivity returns with a device to connect
+        if (requestCode == REQUEST_CONNECT_DEVICE) {
+            if (intent != null) {
+                mToConnectTo = getUsedDevices();
+                if (resultCode == Activity.RESULT_OK && mService != null) {
+                    if (mService.connectAll(mToConnectTo)) {
+                        mToConnectTo = null;
+                    } else {
+                        Toast.makeText(DeviceControlActivity.this,
+                                        getString(R.string.connect_failed),
+                                        Toast.LENGTH_SHORT)
+                                .show();
                     }
                 }
-                break;
+            }
         }
     }
-
 
     Handler handler = new Handler() {
         @Override
@@ -664,11 +671,13 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     };
 
     private void configureToolbar() {
-        deviceBinding = ActDeviceBinding.inflate(getLayoutInflater());
-        View deviceView = deviceBinding.getRoot();
-        Toolbar toolbar = deviceView.findViewById(R.id.my_toolbar);
+        //deviceBinding = ActDeviceBinding.inflate(getLayoutInflater());
+        //View deviceView = deviceBinding.getRoot();
+        //Toolbar toolbar = deviceView.findViewById(R.id.my_toolbar);
         //setSupportActionBar(toolbar);
+
         ActionBar actionbar = getSupportActionBar();
+        assert actionbar != null;
         actionbar.setHomeAsUpIndicator(R.drawable.ic_drawer);
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(false);
@@ -846,6 +855,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                     Thread.sleep(240);
                 }
             } catch (InterruptedException err) {
+                Log.e(TAG, err.toString());
             }
         });
         mRefreshSensor.start();
@@ -858,15 +868,10 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
         return true;
     }
 
-
     private void startSensorService() {
         Log.d(TAG, "Starting service");
         Intent serviceIntent = new Intent(this, BluetoothLeService.class);
-        if (Build.VERSION.SDK_INT >= 26) {
-            startForegroundService(serviceIntent);
-        } else {
-            startService(serviceIntent);
-        }
+        startForegroundService(serviceIntent);
     }
 
     @Override
@@ -1070,7 +1075,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
 
                             String value= editText.getText().toString();
                             if (value.length()>10) value = value.substring(0,9);
-                            if (value != null && !value.equals("")) {
+                            if (!value.isEmpty()) {
                                 String name = "WIT-" + value + "\r\n";
                                 Log.e("------", "WT====" + name);
                                 mService.writeByes(mCurrentDevice, name.getBytes());

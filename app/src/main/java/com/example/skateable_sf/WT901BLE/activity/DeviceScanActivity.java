@@ -54,7 +54,7 @@ public class DeviceScanActivity extends AppCompatActivity {
 
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
-    private static final String TAG = "SkateableCities";
+    private static final String TAG = "DeviceScanActivity";
 
     private ListView mListView;
     private View mViewScan;
@@ -71,8 +71,7 @@ public class DeviceScanActivity extends AppCompatActivity {
         View view = deviceBinding.getRoot();
         setContentView(view);
 
-        Toolbar myToolbar = deviceBinding.myToolbar;
-        //Toolbar myToolbar = (Toolbar) findViewById(R2.id.my_toolbar);
+        //Toolbar myToolbar = deviceBinding.myToolbar;
         //setSupportActionBar(myToolbar);
 
         setTitle(R.string.pick_use);
@@ -149,15 +148,13 @@ public class DeviceScanActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume");
 
-        runOnUiThread(() -> {
-            // Android M Permission check
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_FINE_LOCATION);
-            }
-        });
+        // Android M Permission check
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_FINE_LOCATION);
+        }
 
-        Log.e("--", "onResume");
         // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display acc dialog asking the user to grant permission to enable it.
         if (!mBluetoothAdapter.isEnabled()) {
@@ -181,10 +178,9 @@ public class DeviceScanActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
-        Log.e("--", "onPause");
-
+        Log.d(TAG, "onPause");
         scanLeDevice(false);
+
         Set<BluetoothDevice> usingSensors = new HashSet<>();
         for (int i = 0; i < mLeDeviceListAdapter.mLeDevices.size(); i++) {
             if (Boolean.TRUE.equals(mLeDeviceListAdapter.mUse.get(i))) {
@@ -210,6 +206,7 @@ public class DeviceScanActivity extends AppCompatActivity {
                         }
                     }
                 }, SCAN_PERIOD);
+
                 // Start scanning
                 if (ActivityCompat.checkSelfPermission(getApplicationContext(),
                         Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
@@ -237,7 +234,8 @@ public class DeviceScanActivity extends AppCompatActivity {
         for (BluetoothDevice device : devices)
             deviceAddresses.add(device.getAddress());
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             for (BluetoothDevice device : devices)
                 deviceNames.add(device.getName() + " - " + device.getAddress());
         }

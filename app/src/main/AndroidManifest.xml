@@ -3,10 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.skateable_sf.WT901BLE">
 
-    <uses-feature
-        android:name="android.hardware.bluetooth_le"
-        android:required="true" />
-
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -17,12 +13,25 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
 
     <uses-permission android:name="READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="WRITE_EXTERNAL_STORAGE"/>
+
+    <!--required for android 13 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!--required for android 14 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
+
+    <!-- Allow installation on faked touchscreen -->
+    <uses-feature android:name="android.hardware.faketouch" android:required="false" />
+
+    <!-- Tell the system this app requires OpenGL ES 2.0. -->
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -44,7 +53,6 @@
                 android:resource="@xml/provider_paths"/>
         </provider>
 
-        <activity android:name="com.example.skateable_sf.WT901BLE.activity.PermissionRequestActivity" />
         <activity android:name="com.example.skateable_sf.WT901BLE.activity.DeviceScanActivity" />
         <activity
             android:name="com.example.skateable_sf.WT901BLE.activity.DeviceControlActivity"
@@ -56,11 +64,12 @@
             </intent-filter>
         </activity>
         <activity android:name="com.example.skateable_sf.WT901BLE.activity.AngleActivity" />
+        <activity android:name="com.example.skateable_sf.WT901BLE.activity.PermissionRequestActivity" />
         <activity android:name="com.example.skateable_sf.WT901BLE.view.ChartActivity" />
 
         <service
             android:name="com.example.skateable_sf.WT901BLE.activity.BluetoothLeService"
-            android:foregroundServiceType="connectedDevice"
+            android:foregroundServiceType="location|connectedDevice"
             android:enabled="true" />
     </application>
 

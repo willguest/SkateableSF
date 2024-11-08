@@ -31,11 +31,6 @@ android {
             )
         }
     }
-    sourceSets {
-        getByName("main") {
-            res.srcDir("src/main/resources")
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8

@@ -97,8 +97,8 @@ public class Data {
                         System.arraycopy(fData, 0, magn, 0, 3);
                         return String.format(Locale.US, "magn,%s,%.4f,%.4f,%.4f\n", getFormattedTime(), magn[0], magn[1], magn[2]);
                     case 0x45:
-                        pressure = ((((long) packBuffer[7]) << 24) & 0xff000000) | ((((long) packBuffer[6]) << 16) & 0xff0000) | ((((long) packBuffer[5]) << 8) & 0xff00) | ((((long) packBuffer[4]) & 0xff));
-                        altitude = (((((long) packBuffer[11]) << 24) & 0xff000000) | ((((long) packBuffer[10]) << 16) & 0xff0000) | ((((long) packBuffer[9]) << 8) & 0xff00) | ((((long) packBuffer[8]) & 0xff))) / 100.0f;
+                        pressure = ((((long) packBuffer[7]) << 24) & 0xff000000L) | ((((long) packBuffer[6]) << 16) & 0xff0000) | ((((long) packBuffer[5]) << 8) & 0xff00) | ((((long) packBuffer[4]) & 0xff));
+                        altitude = (((((long) packBuffer[11]) << 24) & 0xff000000L) | ((((long) packBuffer[10]) << 16) & 0xff0000) | ((((long) packBuffer[9]) << 8) & 0xff00) | ((((long) packBuffer[8]) & 0xff))) / 100.0f;
                         return String.format(Locale.US, "pressure,%s,%.4f\naltitude,%s,%.4f", getFormattedTime(), pressure, getFormattedTime(), altitude);
                     case 0x41:
                         for (int i = 0; i < 4; i++) port[i] = (float) (fData[i]);

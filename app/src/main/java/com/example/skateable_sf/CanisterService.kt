@@ -1,8 +1,6 @@
 package com.example.skateable_sf
 
-import android.provider.ContactsContract.Data
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter
@@ -29,7 +27,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.math.BigInteger
 import java.net.URISyntaxException
 import java.nio.file.Paths
 import java.security.KeyPair
