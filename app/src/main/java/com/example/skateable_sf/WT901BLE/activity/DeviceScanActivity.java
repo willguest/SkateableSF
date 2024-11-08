@@ -1,38 +1,6 @@
-package com.example.skateable_sf.WT901BLE.activity;/*
+package com.example.skateable_sf.WT901BLE.activity;
 
-
-
-import android.app.Activity;
-import android.app.ListActivity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.witsensor.WTBLE901.activity.DeviceControlActivity;
-
-import java.util.ArrayList;
-
-import com.witsensor.WTBLE901.R;
-
-
-/**
+/*
  * Activity for scanning and displaying available Bluetooth LE devices.
  */
 
@@ -40,14 +8,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
@@ -75,6 +41,7 @@ import java.util.Set;
 import com.example.skateable_sf.WT901BLE.R;
 
 import com.example.skateable_sf.WT901BLE.databinding.ActDeviceBinding;
+import com.example.skateable_sf.WT901BLE.databinding.ListitemDeviceBinding;
 
 public class DeviceScanActivity extends AppCompatActivity {
 
@@ -84,8 +51,10 @@ public class DeviceScanActivity extends AppCompatActivity {
     private Handler mHandler;
 
     private static final int REQUEST_ENABLE_BT = 1;
+
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
+    private static final String TAG = "SkateableCities";
 
     private ListView mListView;
     private View mViewScan;
@@ -98,18 +67,16 @@ public class DeviceScanActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        com.example.skateable_sf.WT901BLE.databinding.ActDeviceBinding binding = ActDeviceBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
+        ActDeviceBinding deviceBinding = ActDeviceBinding.inflate(getLayoutInflater());
+        View view = deviceBinding.getRoot();
         setContentView(view);
 
-        Toolbar myToolbar = binding.myToolbar;
+        Toolbar myToolbar = deviceBinding.myToolbar;
         //Toolbar myToolbar = (Toolbar) findViewById(R2.id.my_toolbar);
         //setSupportActionBar(myToolbar);
 
         setTitle(R.string.pick_use);
-
-        mListView = binding.listView;
-        //mListView = findViewById(R2.id.listView);
+        ListView mListView = deviceBinding.listView;
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -120,6 +87,9 @@ public class DeviceScanActivity extends AppCompatActivity {
             }
         });
 
+        // Initializes list view adapter.
+        mLeDeviceListAdapter = new LeDeviceListAdapter();
+        mListView.setAdapter(mLeDeviceListAdapter);
 
         mHandler = new Handler();
 
@@ -132,8 +102,8 @@ public class DeviceScanActivity extends AppCompatActivity {
 
         // Initializes acc Bluetooth adapter.  For API level 18 and above, get acc reference to
         // BluetoothAdapter through BluetoothManager.
-        final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
+        //final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Checks if Bluetooth is supported on the device.
         if (mBluetoothAdapter == null) {
@@ -176,31 +146,26 @@ public class DeviceScanActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
 
-        //蓝牙连接
-        // Android M Permission check
-        if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_FINE_LOCATION);
-        }
+        runOnUiThread(() -> {
+            // Android M Permission check
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_FINE_LOCATION);
+            }
+        });
 
         Log.e("--", "onResume");
         // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display acc dialog asking the user to grant permission to enable it.
         if (!mBluetoothAdapter.isEnabled()) {
-            if (!mBluetoothAdapter.isEnabled()) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            }
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-        // Initializes list view adapter.
-        mLeDeviceListAdapter = new LeDeviceListAdapter();
-        mListView.setAdapter(mLeDeviceListAdapter);
+
         scanLeDevice(true);
-        Log.e("--", "scanLeDevice");
     }
 
     @Override
@@ -216,45 +181,46 @@ public class DeviceScanActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        Log.e("--", "onPause");
+
         scanLeDevice(false);
         Set<BluetoothDevice> usingSensors = new HashSet<>();
         for (int i = 0; i < mLeDeviceListAdapter.mLeDevices.size(); i++) {
-            if (mLeDeviceListAdapter.mUse.get(i)) {
+            if (Boolean.TRUE.equals(mLeDeviceListAdapter.mUse.get(i))) {
                 usingSensors.add(mLeDeviceListAdapter.mLeDevices.get(i));
             }
         }
-
         setUsingSensors(usingSensors);
-
         mLeDeviceListAdapter.clear();
         mLeDeviceListAdapter.notifyDataSetChanged();
     }
 
-    private void scanLeDevice(final boolean enable) {
+    private synchronized void scanLeDevice(final boolean enable) {
         if (enable) {
-            // Stops scanning after acc pre-defined scan period.
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mScanning = false;
-
-                    if (ActivityCompat.checkSelfPermission(getApplicationContext(),
-                            Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
-                        mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
+            if (!mScanning) {
+                // Stops scanning after a pre-defined scan period.
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mScanning = false;
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                                Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+                            mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
+                        }
                     }
+                }, SCAN_PERIOD);
+                // Start scanning
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "Starting scan");
+                    mScanning = true;
+                    mBluetoothAdapter.getBluetoothLeScanner().startScan(mLeScanCallback);
                 }
-            }, SCAN_PERIOD);
-
-            mScanning = true;
-            mBluetoothAdapter.getBluetoothLeScanner().startScan(new ScanCallback() {
-                @Override
-                public void onScanResult(int callbackType, ScanResult result) {
-                    super.onScanResult(callbackType, result);
-                }
-            });
-            mBluetoothAdapter.getBluetoothLeScanner().startScan(mLeScanCallback);
+            }
         } else {
             mScanning = false;
+            Log.d(TAG, "Stopping scan");
             mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
         }
     }
@@ -283,22 +249,23 @@ public class DeviceScanActivity extends AppCompatActivity {
 
     // Adapter for holding devices found through scanning.
     private class LeDeviceListAdapter extends BaseAdapter {
-        private ArrayList<BluetoothDevice> mLeDevices;
-        private ArrayList<Integer> mRSSIs;
-        private ArrayList<ScanRecord> mRecords;
-        private ArrayList<Boolean> mUse;
-        private LayoutInflater mInflator;
+        private final ArrayList<BluetoothDevice> mLeDevices;
+        private final ArrayList<Integer> mRSSIs;
+        private final ArrayList<ScanRecord> mRecords;
+        private final ArrayList<Boolean> mUse;
+        private final LayoutInflater mInflater;
 
         public LeDeviceListAdapter() {
             super();
-            mLeDevices = new ArrayList<BluetoothDevice>();
-            mRSSIs = new ArrayList<Integer>();
-            mRecords = new ArrayList<ScanRecord>();
-            mInflator = DeviceScanActivity.this.getLayoutInflater();
+            mLeDevices = new ArrayList<>();
+            mRSSIs = new ArrayList<>();
+            mRecords = new ArrayList<>();
+            mInflater = DeviceScanActivity.this.getLayoutInflater();
             mUse = new ArrayList<>();
         }
 
         public void addDevice(BluetoothDevice device, int rssi, ScanRecord record) {
+            String address = device.getAddress();
             if (!mLeDevices.contains(device)) {
                 mLeDevices.add(device);
                 mRSSIs.add(rssi);
@@ -335,13 +302,20 @@ public class DeviceScanActivity extends AppCompatActivity {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             ViewHolder viewHolder;
+
+
             // General ListView optimization code.
             if (view == null) {
-                view = mInflator.inflate(R.layout.listitem_device, null);
+                ListitemDeviceBinding listItemBinding = ListitemDeviceBinding.inflate(getLayoutInflater());
+                View listItemView = listItemBinding.getRoot();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    view = mInflater.inflate(listItemView.getSourceLayoutResId(), null);
+                }
                 viewHolder = new ViewHolder();
-                viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
-                viewHolder.deviceName = (TextView) view.findViewById(R.id.device_name);
-                viewHolder.use = view.findViewById(R.id.use);
+                viewHolder.deviceAddress = listItemBinding.deviceAddress;
+                viewHolder.deviceName = listItemBinding.deviceName;
+                viewHolder.use = listItemBinding.use;
+                assert view != null;
                 view.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) view.getTag();
@@ -349,10 +323,16 @@ public class DeviceScanActivity extends AppCompatActivity {
 
             BluetoothDevice device = mLeDevices.get(i);
             final String deviceName = mRecords.get(i).getDeviceName();
-            if (deviceName != null && !deviceName.trim().isEmpty())
-                viewHolder.deviceName.setText(deviceName.trim() + "  RSSI:" + mRSSIs.get(i).toString());
-            else
-                viewHolder.deviceName.setText(getString(R.string.unknown_device) + "  RSSI:" + mRSSIs.get(i).toString());
+
+            final String displayName;
+            if (deviceName != null && !deviceName.trim().isEmpty()) {
+                displayName = deviceName.trim() + "  RSSI:" + mRSSIs.get(i).toString();
+            }
+            else {
+                displayName = getString(R.string.unknown_device) + "  RSSI:" + mRSSIs.get(i).toString();
+            }
+
+            viewHolder.deviceName.setText(displayName);
             viewHolder.deviceAddress.setText(device.getAddress());
             viewHolder.use.setChecked(mUse.get(i));
 
@@ -360,17 +340,29 @@ public class DeviceScanActivity extends AppCompatActivity {
         }
     }
 
+    private void addDeviceToAdapter(BluetoothDevice device, int rssi, ScanRecord record) {
+        mLeDeviceListAdapter.addDevice(device, rssi, record);
+        mLeDeviceListAdapter.notifyDataSetChanged();
+    }
+
     // Device scan callback.
-    private ScanCallback mLeScanCallback = new ScanCallback() {
+    private final LeScanCallback mLeScanCallback = new LeScanCallback() {
         @Override
-        public void onScanResult(int callbackType, final ScanResult result) {
-            super.onScanResult(callbackType, result);
+        public void onScanResult(final ScanResult result) {
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mLeDeviceListAdapter.addDevice(result.getDevice(), result.getRssi(), result.getScanRecord());
-                    mLeDeviceListAdapter.notifyDataSetChanged();
+                    ScanRecord record = result.getScanRecord();
+                    BluetoothDevice device = result.getDevice();
+                    int Rssi = result.getRssi();
+
+                    if (record == null || device == null) {
+                        return;
+                    }
+                    Log.d("--", "scan result found " + record.getDeviceName());
+
+                    addDeviceToAdapter(device, Rssi, record);
                 }
             });
         }

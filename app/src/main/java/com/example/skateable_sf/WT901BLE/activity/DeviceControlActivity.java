@@ -308,12 +308,9 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
             mViewPager.setVisibility(View.GONE);
             mLayout.setVisibility(View.VISIBLE);
             lineChart.clear();
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    lineChartManager = new LineChartManager(lineChart, qNames, qColour);
-                    lineChartManager.setDescription("");
-                }
+            new Handler().postDelayed(() -> {
+                lineChartManager = new LineChartManager(lineChart, qNames, qColour);
+                lineChartManager.setDescription("");
             }, 600);
 
             ((TextView) findViewById(R.id.tvTittleX)).setText("q0:");
@@ -339,16 +336,13 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                         mOutputRate = i;
                     }
                 })
-                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        SharedPreferences mySharedPreferences = getSharedPreferences("Output",Activity.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = mySharedPreferences.edit();
-                        editor.putInt("Rate", mOutputRate);
-                        editor.commit();
-                        if (!mService.setRateAll(mOutputRate)) {
-                            Toast.makeText(DeviceControlActivity.this, R.string.failed_set_rate, Toast.LENGTH_SHORT).show();
-                        }
+                .setPositiveButton(R.string.OK, (arg0, arg1) -> {
+                    SharedPreferences mySharedPreferences1 = getSharedPreferences("Output",Activity.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = mySharedPreferences1.edit();
+                    editor.putInt("Rate", mOutputRate);
+                    editor.commit();
+                    if (!mService.setRateAll(mOutputRate)) {
+                        Toast.makeText(DeviceControlActivity.this, R.string.failed_set_rate, Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton(R.string.Cancel, null)
@@ -397,9 +391,6 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
                 .show();
     }
 
-
-
-    private boolean once = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -498,7 +489,7 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     };
 
 
-    private BluetoothLeService.UICallback mCallback = new BluetoothLeService.UICallback() {
+    private final BluetoothLeService.UICallback mCallback = new BluetoothLeService.UICallback() {
         @Override
         public void handleBLEData(String device, final Data data) {
             if (!device.equals(mCurrentDevice))
@@ -686,7 +677,8 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
     private void refreshDevicesDropdown() {
 
         Spinner spinnerNav = binding.spinnerNav;
-        //spinnerBinding = DeviceSpinnerItemBinding.inflate(getLayoutInflater());
+        spinnerBinding = DeviceSpinnerItemBinding.inflate(getLayoutInflater());
+        View spinnerView = spinnerBinding.deviceSpinnerItem;
 
         final Set<Pair<String, String>> usedDevices = getUsedDeviceNames();
         final ArrayList<Pair<String, String>> spinnerArray = new ArrayList<>(usedDevices);
@@ -695,7 +687,11 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
         for (Pair<String, String> p : spinnerArray) {
             onlyNames.add(p.second);
         }
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(this, R.layout.device_spinner_item, onlyNames);
+        int layoutId = spinnerBinding.deviceSpinnerItem.getId();
+        ArrayAdapter<String> spinnerArrayAdapter = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            spinnerArrayAdapter = new ArrayAdapter<>(this, spinnerView.getSourceLayoutResId(), onlyNames);
+        }
         spinnerNav.setAdapter(spinnerArrayAdapter);
         spinnerNav.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -824,35 +820,32 @@ public class DeviceControlActivity extends AppCompatActivity implements Navigati
         // maybe the service was running in the background but the activity was destroyed
         bindService(new Intent(this, BluetoothLeService.class), mServiceConnection, Context.BIND_AUTO_CREATE);
 
-        mRefreshSensor = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (true) {
-                        if (mService != null && mService.isAnyConnected()) {
-                            handler.sendEmptyMessageAtTime(0, 5000);
-                            switch (DisplayIndex) {
-                                case 2://Angle
-                                    mService.writeByes(mCurrentDevice, REQUEST_ANGLE);
-                                    break;
-                                case 3://Mag
-                                    mService.writeByes(mCurrentDevice, REQUEST_MAGN);
-                                    break;
-                                case 4://Pressure
-                                    mService.writeByes(mCurrentDevice, REQUEST_PRESSURE);
-                                    break;
-                                case 5://Port
-                                    mService.writeByes(mCurrentDevice, REQUEST_PORT);
-                                    break;
-                                case 6://Quater
-                                    mService.writeByes(mCurrentDevice, REQUEST_QUATER);
-                                    break;
-                            }
+        mRefreshSensor = new Thread(() -> {
+            try {
+                while (true) {
+                    if (mService != null && mService.isAnyConnected()) {
+                        handler.sendEmptyMessageAtTime(0, 5000);
+                        switch (DisplayIndex) {
+                            case 2://Angle
+                                mService.writeByes(mCurrentDevice, REQUEST_ANGLE);
+                                break;
+                            case 3://Mag
+                                mService.writeByes(mCurrentDevice, REQUEST_MAGN);
+                                break;
+                            case 4://Pressure
+                                mService.writeByes(mCurrentDevice, REQUEST_PRESSURE);
+                                break;
+                            case 5://Port
+                                mService.writeByes(mCurrentDevice, REQUEST_PORT);
+                                break;
+                            case 6://Quaternion
+                                mService.writeByes(mCurrentDevice, REQUEST_QUATER);
+                                break;
                         }
-                        Thread.sleep(240);
                     }
-                } catch (InterruptedException err) {
+                    Thread.sleep(240);
                 }
+            } catch (InterruptedException err) {
             }
         });
         mRefreshSensor.start();

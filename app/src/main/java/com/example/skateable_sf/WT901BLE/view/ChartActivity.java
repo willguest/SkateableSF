@@ -27,6 +27,8 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -69,8 +71,8 @@ public class ChartActivity extends Activity {
 
         OutputStream stream = null;
         try {
-            stream = new FileOutputStream(getExternalFilesDir(null).getPath() + "/" + title
-                    + ".png");
+            stream = Files.newOutputStream(Paths.get(getExternalFilesDir(null).getPath() + "/" + title
+                    + ".png"));
 
             /*
              * Write bitmap to file using JPEG or PNG and 40% quality hint for

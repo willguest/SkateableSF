@@ -139,7 +139,7 @@ public class BluetoothLeService extends Service {
     }
 
     public File getPath(String device) {
-        return mFile.containsKey(device) ? mFile.get(device).path : null;
+        return mFile.containsKey(device) ? Objects.requireNonNull(mFile.get(device)).path : null;
     }
 
 

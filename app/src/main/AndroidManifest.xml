@@ -24,10 +24,6 @@
     <uses-permission android:name="READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="WRITE_EXTERNAL_STORAGE"/>
 
-    <!-- Android6.0 蓝牙扫描才需要 -->
-
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -35,7 +31,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        tools:targetApi="31"
+        tools:targetApi="34"
         android:theme="@style/Theme.AppCompat">
 
         <provider
@@ -48,25 +44,23 @@
                 android:resource="@xml/provider_paths"/>
         </provider>
 
+        <activity android:name="com.example.skateable_sf.WT901BLE.activity.PermissionRequestActivity" />
+        <activity android:name="com.example.skateable_sf.WT901BLE.activity.DeviceScanActivity" />
         <activity
             android:name="com.example.skateable_sf.WT901BLE.activity.DeviceControlActivity"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.skateable_sf.WT901BLE.activity.PermissionRequestActivity" />
-        <activity android:name="com.example.skateable_sf.WT901BLE.activity.DeviceScanActivity" />
         <activity android:name="com.example.skateable_sf.WT901BLE.activity.AngleActivity" />
         <activity android:name="com.example.skateable_sf.WT901BLE.view.ChartActivity" />
 
-
         <service
             android:name="com.example.skateable_sf.WT901BLE.activity.BluetoothLeService"
-            android:foregroundServiceType="remoteMessaging"
+            android:foregroundServiceType="connectedDevice"
             android:enabled="true" />
     </application>
 
